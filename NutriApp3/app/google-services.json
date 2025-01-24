@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "175350979779",
+    "project_id": "nutriapp-4f5f5",
+    "storage_bucket": "nutriapp-4f5f5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:175350979779:android:96e4256aae55656e441676",
+        "android_client_info": {
+          "package_name": "com.filipaeanibal.nutriapp3"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCQhdk1YkSNkxdGrjF2Lpp49KO9S3Y4hI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
