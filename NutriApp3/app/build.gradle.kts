@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.filipaeanibal.nutriapp2"
+    namespace = "com.filipaeanibal.nutriapp3"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.filipaeanibal.nutriapp2"
+        applicationId = "com.filipaeanibal.nutriapp3"
         minSdk = 21
         targetSdk = 34
         versionCode = 1
@@ -59,7 +59,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -67,12 +67,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(libs.androidx.camera.core)
-    implementation(libs.androidx.camera.camera2)
-    implementation(libs.androidx.camera.lifecycle)
-    implementation(libs.androidx.camera.view)
-    implementation(libs.ui)
-    implementation(libs.androidx.material)
-    implementation(libs.ui.tooling.preview)
-    implementation(libs.androidx.activity.compose.v131)
 }
