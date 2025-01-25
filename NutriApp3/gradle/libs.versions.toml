@@ -1,5 +1,11 @@
 [versions]
 agp = "8.6.0"
+cameraCamera2 = "1.5.0-alpha05"
+cameraCore = "1.5.0"
+cameraExtensions = "1.5.0-alpha05"
+cameraLifecycle = "1.5.0-alpha05"
+cameraView = "1.5.0-alpha05"
+cameraxVersion = "1.5.0-alpha05"
 firebaseBom = "33.8.0"
 firebaseMlVision = "24.1.0"
 kotlin = "1.9.0"
@@ -13,6 +19,18 @@ composeBom = "2024.04.01"
 navigationCompose = "2.8.5"
 
 [libraries]
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCore" }
+androidx-camera-camera2-v150alpha05 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCamera2" }
+androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "cameraCore" }
+androidx-camera-core-v150alpha05 = { module = "androidx.camera:camera-core", version.ref = "cameraxVersion" }
+androidx-camera-extensions = { module = "androidx.camera:camera-extensions", version.ref = "cameraCore" }
+androidx-camera-extensions-v150alpha05 = { module = "androidx.camera:camera-extensions", version.ref = "cameraExtensions" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraCore" }
+androidx-camera-lifecycle-v150alpha05 = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraLifecycle" }
+androidx-camera-mlkit-vision = { module = "androidx.camera:camera-mlkit-vision", version.ref = "cameraCamera2" }
+androidx-camera-video = { module = "androidx.camera:camera-video", version.ref = "cameraCamera2" }
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCore" }
+androidx-camera-view-v150alpha05 = { module = "androidx.camera:camera-view", version.ref = "cameraView" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-analytics-ktx = { module = "com.google.firebase:firebase-analytics-ktx" }

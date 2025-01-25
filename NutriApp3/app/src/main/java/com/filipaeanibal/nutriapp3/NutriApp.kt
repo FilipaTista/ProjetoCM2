@@ -15,7 +15,14 @@ fun NutriApp() {
     NavHost(navController = navController, startDestination = "login") {
         composable("login") { LoginPage(onLogin = { navController.navigate("menu") }) }
         composable("menu") { MainMenuPage(onNavigate = { page -> navController.navigate(page) }) }
-        composable("detectarObjetos") { DetectObjectsPage() }
+        composable("detectarObjetos") {
+            DetectObjectsPage(
+                onCameraClick = { navController.navigate("camera") },
+                onBarcodeClick = { /* Lógica para ler código de barras */ },
+                onSearchClick = { /* Lógica para pesquisar alimento */ }
+            )
+        }
+        composable("camera") { CameraPage() }
         composable("gerarReceitas") { RecipeGenPage() }
         composable("historicoReceitas") { HistoryPage() }
     }
