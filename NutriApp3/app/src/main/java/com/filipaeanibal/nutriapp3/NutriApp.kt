@@ -18,11 +18,17 @@ fun NutriApp() {
         composable("detectarObjetos") {
             DetectObjectsPage(
                 onCameraClick = { navController.navigate("camera") },
-                onBarcodeClick = { /* Lógica para ler código de barras */ },
-                onSearchClick = { /* Lógica para pesquisar alimento */ }
+                onBarcodeClick = { navController.navigate("lerCodigoBarras") },
+                onSearchClick = { navController.navigate("pesquisarAlimentos") }
             )
         }
         composable("camera") { CameraPage() }
+        composable("pesquisarAlimentos") {
+            SearchFoodPage(onBackClick = { navController.popBackStack() })
+        }
+        composable("lerCodigoBarras") {
+            ScanBarcodePage(onBackClick = { navController.popBackStack() })
+        }
         composable("gerarReceitas") { RecipeGenPage() }
         composable("historicoReceitas") { HistoryPage() }
     }
