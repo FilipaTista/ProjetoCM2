@@ -71,6 +71,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(platform(libs.firebase.bom))
-
+    implementation(libs.androidx.camera.core.v150alpha05)
+    implementation(libs.androidx.camera.camera2.v150alpha05)
+    implementation(libs.androidx.camera.lifecycle.v150alpha05)
+    implementation(libs.androidx.camera.video)
+    implementation(libs.androidx.camera.view.v150alpha05)
+    implementation(libs.androidx.camera.mlkit.vision)
+    implementation(libs.androidx.camera.extensions.v150alpha05)
 
 }
