@@ -12,8 +12,9 @@ import com.filipaeanibal.nutriapp3.screens.*
 @Composable
 fun NutriApp() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "login") {
-        composable("login") { LoginPage(onLoginSuccess = { navController.navigate("menu") }) }
+    NavHost(navController = navController, startDestination = "auth") {
+        composable("auth") { AuthScreen(navController = navController) }
+        //composable("login") { LoginPage(onLoginSuccess = { navController.navigate("menu") }) }
         composable("menu") { MainMenuPage(onNavigate = { page -> navController.navigate(page) }) }
         composable("detectarObjetos") {
             DetectObjectsPage(

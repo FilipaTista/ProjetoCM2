@@ -70,7 +70,12 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.room.ktx)
+
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.runtime.livedata)
     implementation(libs.firebase.perf.ktx)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -86,15 +91,16 @@ dependencies {
     implementation(libs.androidx.camera.view.v150alpha05)
     implementation(libs.androidx.camera.mlkit.vision)
     implementation(libs.androidx.camera.extensions.v150alpha05)
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
-    implementation ("com.squareup.okhttp3:okhttp:4.10.0")
-    implementation ("io.coil-kt:coil-compose:2.4.0")
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
-    implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation ("androidx.compose.material:material-icons-extended:1.5.4")
-    implementation("com.google.firebase:firebase-auth-ktx")
+
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.okhttp)
+    implementation(libs.coil.compose)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.google.firebase.auth.ktx)
+
 
 }
 // Allow references to generated code
