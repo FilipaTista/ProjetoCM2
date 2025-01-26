@@ -70,9 +70,12 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.room.ktx)
+
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.firebase.perf.ktx)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -88,6 +91,7 @@ dependencies {
     implementation(libs.androidx.camera.view.v150alpha05)
     implementation(libs.androidx.camera.mlkit.vision)
     implementation(libs.androidx.camera.extensions.v150alpha05)
+
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.okhttp)
@@ -96,6 +100,7 @@ dependencies {
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.google.firebase.auth.ktx)
+
 
 }
 // Allow references to generated code

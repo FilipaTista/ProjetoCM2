@@ -1,10 +1,16 @@
 package com.filipaeanibal.nutriapp3.screens
-
-
-import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.outlined.People
+import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,20 +28,24 @@ import com.filipaeanibal.nutriapp3.models.RandomRecipe.RandomRecipe
 import com.filipaeanibal.nutriapp3.models.RandomRecipe.Recipe
 import com.filipaeanibal.nutriapp3.util.NetworkResult
 import com.filipaeanibal.nutriapp3.util.RecipeViewModel
-
-
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.graphics.Color
+import com.google.firebase.perf.util.Timer
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeGenPage(viewModel: RecipeViewModel = hiltViewModel()) {
     val recipeState by viewModel.recipes.collectAsState()
+    var searchQuery by remember { mutableStateOf("") }
     var selectedType by remember { mutableStateOf("") }
     val mealTypes = listOf(
         "main course", "side dish", "dessert",
@@ -43,123 +53,245 @@ fun RecipeGenPage(viewModel: RecipeViewModel = hiltViewModel()) {
         "breakfast", "soup", "beverage",
         "sauce", "marinade", "snack", "drink"
     )
-    var expanded by remember { mutableStateOf(false) }
 
-    // Busca inicial ao abrir a página
+    // Initial fetch when opening the page
     LaunchedEffect(Unit) {
         viewModel.fetchRandomRecipes(number = 2)
     }
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Gerador de Receitas") },
-                actions = {
-                    ExposedDropdownMenuBox(
-                        expanded = expanded,
-                        onExpandedChange = { expanded = it }
-                    ) {
-                        TextField(
-                            value = selectedType.ifEmpty { "Tipo" },
-                            onValueChange = {},
-                            readOnly = true,
-                            modifier = Modifier
-                                .menuAnchor()
-                                .width(150.dp),
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                            },
-                            label = { Text("Filtro de Tipo") }
-                        )
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            mealTypes.forEach { type ->
-                                DropdownMenuItem(
-                                    text = { Text(type) },
-                                    onClick = {
-                                        selectedType = type
-                                        expanded = false
-                                        viewModel.fetchRandomRecipesByType(
-                                            type = type,
-                                            number = 2
-                                        )
-                                    }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "Descobrir Receitas",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                // Search and Filter Row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Search TextField
+                    TextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(56.dp),
+                        placeholder = { Text("Search") },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Search,
+                                contentDescription = "Search",
+                            )
+                        },
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true
+                    )
+
+                    // Search Button
+                    Button(
+                        onClick = {
+                            if (searchQuery.isNotBlank()) {
+                                viewModel.fetchRandomRecipesByType(
+                                    type = searchQuery,
+                                    number = 2
                                 )
                             }
-                        }
+                        },
+                        modifier = Modifier.height(56.dp)
+                    ) {
+                        Text("Search")
                     }
                 }
-            )
-        },
-        content = { innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding)) {
-                when (val state = recipeState) {
-                    is NetworkResult.Loading -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    }
-                    is NetworkResult.Success -> {
-                        val recipes = state.data?.recipes ?: emptyList()
-                        LazyColumn(
-                            modifier = Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            items(recipes) { recipe ->
-                                RecipeItem(recipe)
-                            }
-                        }
-                    }
-                    is NetworkResult.Error -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = state.message ?: "Erro desconhecido",
-                                color = MaterialTheme.colorScheme.error
+
+                // Meal Type Chips
+                LazyRow(
+                    modifier = Modifier.padding(top = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(mealTypes) { type ->
+                        FilterChip(
+                            selected = selectedType == type,
+                            onClick = {
+                                selectedType = if (selectedType == type) "" else type
+                                viewModel.fetchRandomRecipesByType(
+                                    type = type,
+                                    number = 2
+                                )
+                            },
+                            label = { Text(type)},
+                            colors = FilterChipDefaults.filterChipColors(
+                                containerColor = MaterialTheme.colorScheme.surface,
+                                labelColor = MaterialTheme.colorScheme.onSurface,
+                                selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+
                             )
-                        }
+
+                        )
                     }
                 }
             }
         }
-    )
-}
-
-@Composable
-fun RecipeItem(recipe: com.filipaeanibal.nutriapp3.models.RandomRecipe.Recipe) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = recipe.title,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            recipe.image?.let {
-                AsyncImage(
-                    model = it,
-                    contentDescription = recipe.title,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                )
+    ) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            when (val state = recipeState) {
+                is NetworkResult.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+                is NetworkResult.Success -> {
+                    val recipes = state.data?.recipes ?: emptyList()
+                    LazyColumn(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(recipes) { recipe ->
+                            RecipeCard(recipe)
+                        }
+                    }
+                }
+                is NetworkResult.Error -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = state.message ?: "Erro desconhecido",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Pronto em: ${recipe.readyInMinutes} minutos", style = MaterialTheme.typography.bodyMedium)
-            Text(text = "Porções: ${recipe.servings}", style = MaterialTheme.typography.bodyMedium)
-            Text(text = "Descrição: ${recipe.summary}", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
 
+@Composable
+fun RecipeCard(recipe: Recipe) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(8.dp)
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Background Image
+            recipe.image?.let {
+                AsyncImage(
+                    model = it,
+                    contentDescription = recipe.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            // Gradient Overlay
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.8f)
+                            )
+                        )
+                    )
+            )
+
+            // Recipe Details
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                Text(
+                    text = recipe.title,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color.White,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Row(
+                    modifier = Modifier.padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Time Chip
+                    RecipeChip(
+                        icon = {
+                            Icon(
+                                Icons.Outlined.Timer,
+                                contentDescription = "Tempo de preparo",
+                                tint = Color.White
+                            )
+                        },
+                        label = {
+                            Text(
+                                "${recipe.readyInMinutes} min",
+                                color = Color.White
+                            )
+                        },
+                    )
+
+                    // Servings Chip
+                    RecipeChip(
+                        icon = {
+                            Icon(
+                                Icons.Outlined.People,
+                                contentDescription = "Porções",
+                                tint = Color.White
+                            )
+                        },
+                        label = {
+                            Text(
+                                "${recipe.servings} porções",
+                                color = Color.White
+                            )
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun RecipeChip(
+    icon: @Composable () -> Unit,
+    label: @Composable () -> Unit
+) {
+    Surface(
+        modifier = Modifier.height(32.dp),
+        shape = RoundedCornerShape(16.dp),
+        color = Color.White.copy(alpha = 0.3f)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            icon()
+            label()
+        }
+    }
+}
