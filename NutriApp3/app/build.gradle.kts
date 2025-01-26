@@ -100,6 +100,7 @@ dependencies {
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.google.firebase.auth.ktx)
+    implementation ("androidx.compose.material:material-icons-extended:1.5.1")
 
 
 }
