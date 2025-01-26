@@ -1,5 +1,6 @@
 package com.filipaeanibal.nutriapp3.screens
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -29,21 +30,20 @@ import com.filipaeanibal.nutriapp3.models.RandomRecipe.Recipe
 import com.filipaeanibal.nutriapp3.util.NetworkResult
 import com.filipaeanibal.nutriapp3.util.RecipeViewModel
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.graphics.Color
-import com.google.firebase.perf.util.Timer
+import androidx.navigation.NavController
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecipeGenPage(viewModel: RecipeViewModel = hiltViewModel()) {
+fun RecipeGenPage(
+    navController: NavController,
+    viewModel: RecipeViewModel = hiltViewModel()) {
     val recipeState by viewModel.recipes.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     var selectedType by remember { mutableStateOf("") }
@@ -164,7 +164,10 @@ fun RecipeGenPage(viewModel: RecipeViewModel = hiltViewModel()) {
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(recipes) { recipe ->
-                            RecipeCard(recipe)
+                            RecipeCard(recipe = recipe,
+                                onClick = {
+                                    navController.navigate("recipeDetails/${recipe.id}")
+                                })
                         }
                     }
                 }
@@ -185,11 +188,15 @@ fun RecipeGenPage(viewModel: RecipeViewModel = hiltViewModel()) {
 }
 
 @Composable
-fun RecipeCard(recipe: Recipe) {
+fun RecipeCard(
+    recipe: Recipe,
+    onClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(300.dp),
+            .height(300.dp)
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(8.dp)
     ) {
