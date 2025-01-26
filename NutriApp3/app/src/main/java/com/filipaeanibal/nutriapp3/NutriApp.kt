@@ -31,5 +31,6 @@ fun NutriApp() {
         }
         composable("gerarReceitas") { RecipeGenPage() }
         composable("historicoReceitas") { HistoryPage() }
+
     }
 }
