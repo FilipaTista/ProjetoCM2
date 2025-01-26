@@ -30,28 +30,20 @@ import androidx.navigation.NavHostController
 import com.filipaeanibal.nutriapp3.util.AuthViewModel
 import com.google.firebase.auth.FirebaseUser
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
-fun AuthScreen(
-    navController: NavHostController,
-    authViewModel: AuthViewModel = viewModel()
-) {
+fun AuthScreen(navController: NavHostController, authViewModel: AuthViewModel = viewModel()) {
     val context = LocalContext.current
     val currentUser: FirebaseUser? by authViewModel.currentUser.observeAsState(null)
     val authError: String? by authViewModel.authError.observeAsState(null)
-    val isFirstRun: Boolean by authViewModel.isFirstRun.observeAsState(true)
-
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var showEmptyFieldsError by remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = Unit) {
-        authViewModel.onAuthScreenDisplayed()
-    }
 
-    LaunchedEffect(key1 = currentUser) {
-        if (currentUser != null && !isFirstRun) {
-            Toast.makeText(context, "Login bem-sucedido!", Toast.LENGTH_SHORT).show()
-            // Navegar para a tela principal (menu)
+    LaunchedEffect(currentUser) {
+        if (currentUser != null) {
+            // Se o utilizador está autenticado, vai para o menu
             navController.navigate("menu") {
                 popUpTo("auth") { inclusive = true }
                 launchSingleTop = true
@@ -59,9 +51,15 @@ fun AuthScreen(
         }
     }
 
-    LaunchedEffect(key1 = authError) {
+   LaunchedEffect(authError) {
         if (authError != null) {
             Toast.makeText(context, authError, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(showEmptyFieldsError) {
+        if (showEmptyFieldsError) {
+            Toast.makeText(context, "Por favor, preencha todos os campos.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -90,11 +88,25 @@ fun AuthScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { authViewModel.login(email, password) }) {
+            Button(onClick = {
+                if (email.isBlank() || password.isBlank()) {
+                    showEmptyFieldsError = true
+                } else {
+                    showEmptyFieldsError = false
+                    authViewModel.login(email, password)
+                }
+            }) {
                 Text("Login")
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = { authViewModel.register(email, password) }) {
+            Button(onClick = {
+                if (email.isBlank() || password.isBlank()) {
+                    showEmptyFieldsError = true
+                } else {
+                    showEmptyFieldsError = false
+                    authViewModel.register(email, password)
+                }
+            }) {
                 Text("Registar")
             }
         }
