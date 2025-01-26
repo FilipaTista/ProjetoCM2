@@ -7,10 +7,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
 class AuthViewModel : ViewModel() {
-
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-
-    private val _currentUser = MutableLiveData<FirebaseUser?>()
+    private val _currentUser = MutableLiveData<FirebaseUser?>(auth.currentUser)
     val currentUser: LiveData<FirebaseUser?> = _currentUser
 
     private val _authError = MutableLiveData<String?>()
@@ -20,7 +18,12 @@ class AuthViewModel : ViewModel() {
     private val _isFirstRun = MutableLiveData<Boolean>(true)
     val isFirstRun: LiveData<Boolean> = _isFirstRun
 
-    init {
+     init {
+        // Estado inicial configurado corretamente com o utilizador atual
+        _currentUser.value = auth.currentUser
+    }
+
+    private fun checkCurrentUser() {
         _currentUser.value = auth.currentUser
     }
 
@@ -30,8 +33,6 @@ class AuthViewModel : ViewModel() {
                 if (task.isSuccessful) {
                     _currentUser.value = auth.currentUser
                     _authError.value = null
-                    // Resetar o estado de primeira execução após o login
-                    _isFirstRun.value = false
                 } else {
                     _authError.value = task.exception?.message ?: "Erro de autenticação"
                 }
@@ -44,8 +45,6 @@ class AuthViewModel : ViewModel() {
                 if (task.isSuccessful) {
                     _currentUser.value = auth.currentUser
                     _authError.value = null
-                    // Resetar o estado de primeira execução após o registo
-                    _isFirstRun.value = false
                 } else {
                     _authError.value = task.exception?.message ?: "Erro de registo"
                 }
@@ -55,8 +54,6 @@ class AuthViewModel : ViewModel() {
     fun logout() {
         auth.signOut()
         _currentUser.value = null
-        // Resetar o estado de primeira execução após o logout
-        _isFirstRun.value = true
     }
     fun onAuthScreenDisplayed() {
         _isFirstRun.value = false
