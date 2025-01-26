@@ -50,15 +50,6 @@ fun AuthScreen(navController: NavHostController, authViewModel: AuthViewModel = 
             }
         }
     }
-    LaunchedEffect(key1 = currentUser) {
-        if (currentUser != null && !isFirstRun) {
-            Toast.makeText(context, "Login bem-sucedido!", Toast.LENGTH_SHORT).show()
-            // Navegar para a tela principal (menu)
-            navController.navigate("menu") {
-                popUpTo("auth") { inclusive = true }
-            }
-        }
-    }
 
    LaunchedEffect(authError) {
         if (authError != null) {
