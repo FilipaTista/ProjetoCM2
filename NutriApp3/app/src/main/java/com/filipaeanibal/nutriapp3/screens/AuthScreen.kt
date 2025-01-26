@@ -75,8 +75,25 @@ fun AuthScreen(navController: NavHostController, authViewModel: AuthViewModel = 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
-
-@@ -90,13 +87,16 @@ fun AuthScreen(
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Password") },
+                visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -84,10 +101,22 @@ fun AuthScreen(navController: NavHostController, authViewModel: AuthViewModel = 
                 if (email.isBlank() || password.isBlank()) {
                     showEmptyFieldsError = true
                 } else {
+                    showEmptyFieldsError = false
                     authViewModel.login(email, password)
                 }
             }) {
                 Text("Login")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = {
+                if (email.isBlank() || password.isBlank()) {
+                    showEmptyFieldsError = true
+                } else {
+                    showEmptyFieldsError = false
+                    authViewModel.register(email, password)
+                }
+            }) {
+                Text("Registar")
             }
         }
     }
