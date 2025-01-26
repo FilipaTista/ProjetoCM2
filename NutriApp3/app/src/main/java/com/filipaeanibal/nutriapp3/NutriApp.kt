@@ -13,6 +13,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.filipaeanibal.nutriapp3.screens.*
 import com.filipaeanibal.nutriapp3.util.AuthViewModel
+import androidx.navigation.navArgument
+import androidx.navigation.NavType
 
 @Composable
 fun NutriApp() {
@@ -52,7 +54,19 @@ fun AppNavGraph(navController: NavHostController) {
         composable("lerCodigoBarras") {
             ScanBarcodePage(onBackClick = { navController.popBackStack() })
         }
-        composable("gerarReceitas") { RecipeGenPage() }
+        composable("gerarReceitas") { RecipeGenPage(navController) }
+        composable(
+            route = "recipeDetails/{recipeId}",
+            arguments = listOf(navArgument("recipeId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val recipeId = backStackEntry.arguments?.getInt("recipeId")
+            recipeId?.let {
+                RecipeDetailsPage(
+                    recipeId = it,
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+        }
         composable("historicoReceitas") { HistoryPage() }
     }
 }
