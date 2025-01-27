@@ -101,6 +101,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.google.firebase.auth.ktx)
     implementation ("androidx.compose.material:material-icons-extended:1.5.1")
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:latest.release")
 
 
 }
