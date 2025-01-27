@@ -1,5 +1,6 @@
 package com.filipaeanibal.nutriapp3.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -46,14 +47,33 @@ fun IngredientInformationPage(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Detalhes do Ingrediente") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar")
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(16.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier.padding(end = 16.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Voltar",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
+                    Text(
+                        text = "Detalhes do Ingrediente",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
                 }
-            )
+            }
         }
     ) { innerPadding ->
         Box(
@@ -71,6 +91,14 @@ fun IngredientInformationPage(
                         modifier = Modifier.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
+                        // Exibir o nome do ingrediente
+                        item {
+                            Text(
+                                text = ingredient.name,
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                        }
+
                         item {
                             ingredient.nutrition?.nutrients?.let { nutrients ->
                                 // Definir a ordem desejada

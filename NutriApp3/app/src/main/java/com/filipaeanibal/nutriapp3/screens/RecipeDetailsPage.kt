@@ -108,7 +108,6 @@ fun RecipeDetailsPage(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         item {
-                            // Main Recipe Card similar to RecipeGenPage
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
