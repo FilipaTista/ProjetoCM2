@@ -49,7 +49,8 @@ fun AppNavGraph(navController: NavHostController) {
         }
         composable("camera") { CameraPage() }
         composable("pesquisarAlimentos") {
-            SearchFoodPage(onBackClick = { navController.popBackStack() })
+            SearchFoodPage(onBackClick = { navController.popBackStack() },
+                navController = navController)
         }
         composable("lerCodigoBarras") {
             ScanBarcodePage(onBackClick = { navController.popBackStack() })

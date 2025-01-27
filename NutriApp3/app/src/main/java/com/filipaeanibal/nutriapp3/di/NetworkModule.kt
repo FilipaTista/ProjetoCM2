@@ -3,6 +3,7 @@ package com.filipaeanibal.nutriapp3.di
 
 import com.filipaeanibal.nutriapp3.util.Constants
 import com.filipaeanibal.nutriapp3.util.IngredientInformationApi
+import com.filipaeanibal.nutriapp3.util.IngredientSearchApi
 import com.filipaeanibal.nutriapp3.util.RandomRecipeApi
 import com.filipaeanibal.nutriapp3.util.RecipeDetailsApi
 import com.filipaeanibal.nutriapp3.util.RecipeInstructionsApi
@@ -78,4 +79,12 @@ object NetworkModule {
     fun provideSearchRecipesbyIngredientsApi(retrofit: Retrofit): SearchRecipesbyIngredientsApi {
         return retrofit.create(SearchRecipesbyIngredientsApi::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideIngredientSearchApi(retrofit: Retrofit): IngredientSearchApi {
+        return retrofit.create(IngredientSearchApi::class.java)
+    }
+
+
 }
