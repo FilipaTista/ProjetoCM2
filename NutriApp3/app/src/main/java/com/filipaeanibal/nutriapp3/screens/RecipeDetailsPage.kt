@@ -4,6 +4,7 @@ package com.filipaeanibal.nutriapp3.screens
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Timer
@@ -38,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kotlin.math.roundToInt
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavHostController
 import com.filipaeanibal.nutriapp3.models.RecipeInstructions.RecipeInstructions
 
 
@@ -45,7 +48,8 @@ import com.filipaeanibal.nutriapp3.models.RecipeInstructions.RecipeInstructions
 fun RecipeDetailsPage(
     recipeId: Int,
     onBackClick: () -> Unit,
-    viewModel: RecipeDetailsViewModel = hiltViewModel()
+    viewModel: RecipeDetailsViewModel = hiltViewModel(),
+    navController: NavHostController
 ) {
     // Trigger fetch when the page loads
     LaunchedEffect(recipeId) {
@@ -229,6 +233,15 @@ fun RecipeDetailsPage(
                         // Key Nutrients
                         item {
                             recipeDetails.nutrition?.nutrients?.let { nutrients ->
+                                // Definir a ordem desejada
+                                val nutrientOrder = listOf("Calories", "Protein", "Carbohydrates", "Fat")
+
+                                // Filtrar e ordenar os nutrientes
+                                val mainNutrients = nutrients.filter { nutrient ->
+                                    nutrient.name in nutrientOrder
+                                }.sortedBy { nutrient ->
+                                    nutrientOrder.indexOf(nutrient.name)
+                                }
                                 Card(
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RoundedCornerShape(16.dp)
@@ -238,10 +251,11 @@ fun RecipeDetailsPage(
                                         verticalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
                                         Text(
-                                            text = "Caloric Distribution",
+                                            text = "Nutritional Information",
                                             style = MaterialTheme.typography.titleMedium
                                         )
-                                        nutrients.take(5).forEach { nutrient ->
+                                        // Exibir os nutrientes filtrados e ordenados
+                                        mainNutrients.forEach { nutrient ->
                                             Text("${nutrient.name}: ${nutrient.amount.roundToInt()} ${nutrient.unit}")
                                         }
                                     }
@@ -251,8 +265,33 @@ fun RecipeDetailsPage(
                         item {
                             when (val instructionsState = viewModel.recipeInstructions.collectAsState().value) {
                                 is NetworkResult.Success -> {
-                                    instructionsState.data?.let { IngredientsSection(it) }
-                                    instructionsState.data?.let { InstructionsSection(it) }
+                                    instructionsState.data?.let { instructions ->
+                                        // Renderiza ingredientes diretamente no escopo do LazyColumn
+                                        IngredientsSection(
+                                            instructions = instructions,
+                                            onIngredientClick = { ingredientId ->
+                                                navController.navigate("ingredientInformation/$ingredientId")
+                                            }
+                                        )
+                                    }
+                                }
+                                is NetworkResult.Loading -> {
+                                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                                }
+                                is NetworkResult.Error -> {
+                                    Text(
+                                        text = instructionsState.message ?: "Erro ao carregar instruções",
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            }
+                        }
+                        item {
+                            when (val instructionsState = viewModel.recipeInstructions.collectAsState().value) {
+                                is NetworkResult.Success -> {
+                                    instructionsState.data?.let { instructions ->
+                                        InstructionsSection(instructions)
+                                    }
                                 }
                                 is NetworkResult.Loading -> {
                                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -315,7 +354,10 @@ fun InstructionsSection(instructions: RecipeInstructions) {
 }
 
 @Composable
-fun IngredientsSection(instructions: RecipeInstructions) {
+fun IngredientsSection(
+    instructions: RecipeInstructions,
+    onIngredientClick: (Int) -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp)
@@ -329,13 +371,11 @@ fun IngredientsSection(instructions: RecipeInstructions) {
                 style = MaterialTheme.typography.titleLarge
             )
 
-            // Coletar os ingredientes únicos
             val uniqueIngredients = instructions
                 .flatMap { it.steps }
                 .flatMap { it.ingredients }
                 .distinctBy { it.id }
 
-            // Exibir uma mensagem se nenhum ingrediente for encontrado
             if (uniqueIngredients.isEmpty()) {
                 Text(
                     text = "Nenhum ingrediente encontrado.",
@@ -343,16 +383,13 @@ fun IngredientsSection(instructions: RecipeInstructions) {
                     color = MaterialTheme.colorScheme.error
                 )
             } else {
-                // Mostrar a lista de ingredientes
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    uniqueIngredients.forEach { ingredient ->
-                        Text(
-                            text = "- ${ingredient.name} + ${ingredient.id}",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
+                // Renderiza ingredientes diretamente
+                uniqueIngredients.forEach { ingredient ->
+                    Text(
+                        text = ingredient.name,
+                        modifier = Modifier.clickable { onIngredientClick(ingredient.id) },
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
             }
         }
