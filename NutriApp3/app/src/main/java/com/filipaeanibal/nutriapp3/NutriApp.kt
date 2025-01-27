@@ -83,9 +83,11 @@ fun AppNavGraph(navController: NavHostController) {
             IngredientInformationPage(
                 ingredientId = ingredientId,
                 ingredientName = ingredientName,
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                navController = navController // Adicione esta linha
             )
         }
+
 
         composable("historicoReceitas") { HistoryPage() }
     }

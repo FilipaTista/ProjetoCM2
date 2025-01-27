@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import coil.compose.AsyncImage
 import kotlin.math.roundToInt
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavHostController
 import com.filipaeanibal.nutriapp3.models.SearchRecipesbyIngredients.SearchRecipesbyIngredientsItem
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,7 +46,8 @@ fun IngredientInformationPage(
     ingredientId: Int,
     ingredientName: String,
     onBackClick: () -> Unit,
-    viewModel: IngredientInformationViewModel = hiltViewModel()
+    viewModel: IngredientInformationViewModel = hiltViewModel(),
+    navController: NavHostController
 ) {
     LaunchedEffect(ingredientId) {
         viewModel.fetchIngredientInformation(ingredientId)
@@ -182,7 +184,8 @@ fun IngredientInformationPage(
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     items(recipes) { recipe ->
-                                        RecipeCardByIngredient(recipe)
+                                        RecipeCardByIngredient(recipe = recipe,
+                                            navController = navController)
                                     }
                                 }
                             }
@@ -200,12 +203,12 @@ fun IngredientInformationPage(
     }
 }
 @Composable
-fun RecipeCardByIngredient(recipe: SearchRecipesbyIngredientsItem) {
+fun RecipeCardByIngredient(recipe: SearchRecipesbyIngredientsItem, navController: NavHostController) {
     Card(
         modifier = Modifier
             .width(200.dp)
             .height(150.dp)
-            .clickable { /* Ação ao clicar no card */ },
+            .clickable { navController.navigate("recipeDetails/${recipe.id}") },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(8.dp)
     ) {

@@ -1,5 +1,6 @@
 package com.filipaeanibal.nutriapp3.util
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.room.util.query
