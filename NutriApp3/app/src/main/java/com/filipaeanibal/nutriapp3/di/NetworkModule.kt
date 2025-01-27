@@ -4,6 +4,7 @@ package com.filipaeanibal.nutriapp3.di
 import com.filipaeanibal.nutriapp3.util.Constants
 import com.filipaeanibal.nutriapp3.util.RandomRecipeApi
 import com.filipaeanibal.nutriapp3.util.RecipeDetailsApi
+import com.filipaeanibal.nutriapp3.util.RecipeInstructionsApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,5 +57,11 @@ object NetworkModule {
     @Singleton
     fun provideRecipeDetailsApi(retrofit: Retrofit): RecipeDetailsApi {
         return retrofit.create(RecipeDetailsApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRecipeInstructionsApi(retrofit: Retrofit): RecipeInstructionsApi {
+        return retrofit.create(RecipeInstructionsApi::class.java)
     }
 }

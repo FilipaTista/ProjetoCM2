@@ -24,6 +24,7 @@ import com.filipaeanibal.nutriapp3.util.RecipeDetailsViewModel
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Timer
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kotlin.math.roundToInt
 import androidx.compose.ui.graphics.Color
+import com.filipaeanibal.nutriapp3.models.RecipeInstructions.RecipeInstructions
 
 
 @Composable
@@ -48,6 +50,7 @@ fun RecipeDetailsPage(
     // Trigger fetch when the page loads
     LaunchedEffect(recipeId) {
         viewModel.fetchRecipeDetails(recipeId)
+        viewModel.fetchRecipeInstructions(recipeId)
     }
 
     val recipeDetailsState by viewModel.recipeDetails.collectAsState()
@@ -245,6 +248,23 @@ fun RecipeDetailsPage(
                                 }
                             }
                         }
+                        item {
+                            when (val instructionsState = viewModel.recipeInstructions.collectAsState().value) {
+                                is NetworkResult.Success -> {
+                                    instructionsState.data?.let { IngredientsSection(it) }
+                                    instructionsState.data?.let { InstructionsSection(it) }
+                                }
+                                is NetworkResult.Loading -> {
+                                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                                }
+                                is NetworkResult.Error -> {
+                                    Text(
+                                        text = instructionsState.message ?: "Erro ao carregar instruções",
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
                 is NetworkResult.Error -> {
@@ -258,3 +278,85 @@ fun RecipeDetailsPage(
         }
     }
 }
+
+@Composable
+fun InstructionsSection(instructions: RecipeInstructions) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = "Instruções",
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            instructions.forEach { instructionItem ->
+                instructionItem.steps.forEach { step ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = "${step.number}.",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.width(32.dp)
+                        )
+                        Text(step.step)
+
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun IngredientsSection(instructions: RecipeInstructions) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Ingredientes",
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            // Coletar os ingredientes únicos
+            val uniqueIngredients = instructions
+                .flatMap { it.steps }
+                .flatMap { it.ingredients }
+                .distinctBy { it.id }
+
+            // Exibir uma mensagem se nenhum ingrediente for encontrado
+            if (uniqueIngredients.isEmpty()) {
+                Text(
+                    text = "Nenhum ingrediente encontrado.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.error
+                )
+            } else {
+                // Mostrar a lista de ingredientes
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    uniqueIngredients.forEach { ingredient ->
+                        Text(
+                            text = "- ${ingredient.name} + ${ingredient.id}",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+
