@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.firebase.perf.ktx)
+    implementation(libs.google.firebase.firestore.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -101,6 +102,8 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.google.firebase.auth.ktx)
     implementation ("androidx.compose.material:material-icons-extended:1.5.1")
+    implementation("com.google.guava:guava:32.1.3-android")
+    implementation("com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava")
 
 
 }

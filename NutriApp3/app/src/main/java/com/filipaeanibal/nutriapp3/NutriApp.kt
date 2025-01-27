@@ -28,18 +28,24 @@ fun NutriApp() {
 }
 @Composable
 fun AppNavGraph(navController: NavHostController) {
-    val authViewModel: AuthViewModel = viewModel() // Se estiver a usar Hilt
+    val authViewModel: AuthViewModel = viewModel()
     NavHost(navController = navController, startDestination = "auth") {
+
+        // AuthScreen
         composable("auth") {
             AuthScreen(navController = navController, authViewModel = authViewModel)
         }
+
+        // MainMenuPage
         composable("menu") {
             MainMenuPage(
                 onNavigate = { page -> navController.navigate(page) },
-                navController = navController, // Passar o navController corretamente aqui
+                navController = navController,
                 authViewModel = authViewModel
             )
         }
+
+        // DetectObjectsPage
         composable("detectarObjetos") {
             DetectObjectsPage(
                 onCameraClick = { navController.navigate("camera") },
@@ -47,15 +53,27 @@ fun AppNavGraph(navController: NavHostController) {
                 onSearchClick = { navController.navigate("pesquisarAlimentos") }
             )
         }
+
+        // CameraPage
         composable("camera") { CameraPage() }
+
+        // SearchFoodPage
         composable("pesquisarAlimentos") {
-            SearchFoodPage(onBackClick = { navController.popBackStack() },
-                navController = navController)
+            SearchFoodPage(
+                onBackClick = { navController.popBackStack() },
+                navController = navController
+            )
         }
+
+        // ScanBarcodePage
         composable("lerCodigoBarras") {
             ScanBarcodePage(onBackClick = { navController.popBackStack() })
         }
+
+        // RecipeGenPage
         composable("gerarReceitas") { RecipeGenPage(navController) }
+
+        // RecipeDetailsPage
         composable(
             route = "recipeDetails/{recipeId}",
             arguments = listOf(navArgument("recipeId") { type = NavType.IntType })
@@ -65,12 +83,12 @@ fun AppNavGraph(navController: NavHostController) {
                 RecipeDetailsPage(
                     recipeId = it,
                     onBackClick = { navController.popBackStack() },
-                    navController = navController // Adicionado aqui
+                    navController = navController
                 )
             }
         }
 
-        // Rota para IngredientInformationPage
+        // IngredientInformationPage
         composable(
             route = "ingredientInformation/{ingredientId}/{ingredientName}",
             arguments = listOf(
@@ -85,11 +103,12 @@ fun AppNavGraph(navController: NavHostController) {
                 ingredientId = ingredientId,
                 ingredientName = ingredientName,
                 onBackClick = { navController.popBackStack() },
-                navController = navController // Adicione esta linha
+                navController = navController
             )
         }
-
-
-        composable("historicoReceitas") { HistoryPage() }
+        // HistoryPage
+        composable("historicoReceitas") {
+            HistoryPage(navController = navController)
+        }
     }
 }

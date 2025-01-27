@@ -8,6 +8,8 @@ import com.filipaeanibal.nutriapp3.util.RandomRecipeApi
 import com.filipaeanibal.nutriapp3.util.RecipeDetailsApi
 import com.filipaeanibal.nutriapp3.util.RecipeInstructionsApi
 import com.filipaeanibal.nutriapp3.util.SearchRecipesbyIngredientsApi
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -86,5 +88,16 @@ object NetworkModule {
         return retrofit.create(IngredientSearchApi::class.java)
     }
 
+    @Provides
+    @Singleton
+    fun provideFirestore(): FirebaseFirestore {
+        return FirebaseFirestore.getInstance()
+    }
 
+    @Provides
+    @Singleton
+    fun provideFirebaseAuth(): FirebaseAuth {
+        return FirebaseAuth.getInstance()
+    }
 }
+
