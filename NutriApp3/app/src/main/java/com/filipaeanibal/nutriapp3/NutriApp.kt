@@ -71,16 +71,20 @@ fun AppNavGraph(navController: NavHostController) {
 
         // Rota para IngredientInformationPage
         composable(
-            route = "ingredientInformation/{ingredientId}",
-            arguments = listOf(navArgument("ingredientId") { type = NavType.IntType })
+            route = "ingredientInformation/{ingredientId}/{ingredientName}",
+            arguments = listOf(
+                navArgument("ingredientId") { type = NavType.IntType },
+                navArgument("ingredientName") { type = NavType.StringType }
+            )
         ) { backStackEntry ->
-            val ingredientId = backStackEntry.arguments?.getInt("ingredientId")
-            ingredientId?.let {
-                IngredientInformationPage(
-                    ingredientId = it,
-                    onBackClick = { navController.popBackStack() }
-                )
-            }
+            val ingredientId = backStackEntry.arguments?.getInt("ingredientId") ?: 0
+            val ingredientName = backStackEntry.arguments?.getString("ingredientName").orEmpty()
+
+            IngredientInformationPage(
+                ingredientId = ingredientId,
+                ingredientName = ingredientName,
+                onBackClick = { navController.popBackStack() }
+            )
         }
 
         composable("historicoReceitas") { HistoryPage() }

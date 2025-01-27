@@ -6,6 +6,7 @@ import com.filipaeanibal.nutriapp3.util.IngredientInformationApi
 import com.filipaeanibal.nutriapp3.util.RandomRecipeApi
 import com.filipaeanibal.nutriapp3.util.RecipeDetailsApi
 import com.filipaeanibal.nutriapp3.util.RecipeInstructionsApi
+import com.filipaeanibal.nutriapp3.util.SearchRecipesbyIngredientsApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -70,5 +71,11 @@ object NetworkModule {
     @Singleton
     fun provideIngredientInformationApi(retrofit: Retrofit): IngredientInformationApi {
         return retrofit.create(IngredientInformationApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSearchRecipesbyIngredientsApi(retrofit: Retrofit): SearchRecipesbyIngredientsApi {
+        return retrofit.create(SearchRecipesbyIngredientsApi::class.java)
     }
 }

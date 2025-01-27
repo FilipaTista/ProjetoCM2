@@ -268,8 +268,8 @@ fun RecipeDetailsPage(
                                         // Renderiza ingredientes diretamente no escopo do LazyColumn
                                         IngredientsSection(
                                             instructions = instructions,
-                                            onIngredientClick = { ingredientId ->
-                                                navController.navigate("ingredientInformation/$ingredientId")
+                                            onIngredientClick = { ingredientId, ingredientName ->
+                                                navController.navigate("ingredientInformation/$ingredientId/$ingredientName")
                                             }
                                         )
                                     }
@@ -355,7 +355,7 @@ fun InstructionsSection(instructions: RecipeInstructions) {
 @Composable
 fun IngredientsSection(
     instructions: RecipeInstructions,
-    onIngredientClick: (Int) -> Unit
+    onIngredientClick: (Int,String) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -386,7 +386,7 @@ fun IngredientsSection(
                 uniqueIngredients.forEach { ingredient ->
                     Text(
                         text = ingredient.name,
-                        modifier = Modifier.clickable { onIngredientClick(ingredient.id) },
+                        modifier = Modifier.clickable { onIngredientClick(ingredient.id, ingredient.name) },
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }

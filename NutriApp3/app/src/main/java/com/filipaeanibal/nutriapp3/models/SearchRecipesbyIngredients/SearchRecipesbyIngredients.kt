@@ -1,0 +1,3 @@
+package com.filipaeanibal.nutriapp3.models.SearchRecipesbyIngredients
+
+class SearchRecipesbyIngredients : ArrayList<SearchRecipesbyIngredientsItem>()
