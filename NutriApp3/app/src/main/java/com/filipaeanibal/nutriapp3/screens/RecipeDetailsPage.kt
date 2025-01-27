@@ -4,6 +4,7 @@ package com.filipaeanibal.nutriapp3.screens
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,8 @@ import com.filipaeanibal.nutriapp3.util.RecipeDetailsViewModel
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Timer
@@ -37,17 +40,21 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kotlin.math.roundToInt
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavHostController
+import com.filipaeanibal.nutriapp3.models.RecipeInstructions.RecipeInstructions
 
 
 @Composable
 fun RecipeDetailsPage(
     recipeId: Int,
     onBackClick: () -> Unit,
-    viewModel: RecipeDetailsViewModel = hiltViewModel()
+    viewModel: RecipeDetailsViewModel = hiltViewModel(),
+    navController: NavHostController
 ) {
     // Trigger fetch when the page loads
     LaunchedEffect(recipeId) {
         viewModel.fetchRecipeDetails(recipeId)
+        viewModel.fetchRecipeInstructions(recipeId)
     }
 
     val recipeDetailsState by viewModel.recipeDetails.collectAsState()
@@ -101,7 +108,6 @@ fun RecipeDetailsPage(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         item {
-                            // Main Recipe Card similar to RecipeGenPage
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -226,6 +232,15 @@ fun RecipeDetailsPage(
                         // Key Nutrients
                         item {
                             recipeDetails.nutrition?.nutrients?.let { nutrients ->
+                                // Definir a ordem desejada
+                                val nutrientOrder = listOf("Calories", "Protein", "Carbohydrates", "Fat")
+
+                                // Filtrar e ordenar os nutrientes
+                                val mainNutrients = nutrients.filter { nutrient ->
+                                    nutrient.name in nutrientOrder
+                                }.sortedBy { nutrient ->
+                                    nutrientOrder.indexOf(nutrient.name)
+                                }
                                 Card(
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RoundedCornerShape(16.dp)
@@ -235,13 +250,56 @@ fun RecipeDetailsPage(
                                         verticalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
                                         Text(
-                                            text = "Caloric Distribution",
+                                            text = "Nutritional Information",
                                             style = MaterialTheme.typography.titleMedium
                                         )
-                                        nutrients.take(5).forEach { nutrient ->
+                                        // Exibir os nutrientes filtrados e ordenados
+                                        mainNutrients.forEach { nutrient ->
                                             Text("${nutrient.name}: ${nutrient.amount.roundToInt()} ${nutrient.unit}")
                                         }
                                     }
+                                }
+                            }
+                        }
+                        item {
+                            when (val instructionsState = viewModel.recipeInstructions.collectAsState().value) {
+                                is NetworkResult.Success -> {
+                                    instructionsState.data?.let { instructions ->
+                                        // Renderiza ingredientes diretamente no escopo do LazyColumn
+                                        IngredientsSection(
+                                            instructions = instructions,
+                                            onIngredientClick = { ingredientId, ingredientName ->
+                                                navController.navigate("ingredientInformation/$ingredientId/$ingredientName")
+                                            }
+                                        )
+                                    }
+                                }
+                                is NetworkResult.Loading -> {
+                                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                                }
+                                is NetworkResult.Error -> {
+                                    Text(
+                                        text = instructionsState.message ?: "Erro ao carregar instruções",
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            }
+                        }
+                        item {
+                            when (val instructionsState = viewModel.recipeInstructions.collectAsState().value) {
+                                is NetworkResult.Success -> {
+                                    instructionsState.data?.let { instructions ->
+                                        InstructionsSection(instructions)
+                                    }
+                                }
+                                is NetworkResult.Loading -> {
+                                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                                }
+                                is NetworkResult.Error -> {
+                                    Text(
+                                        text = instructionsState.message ?: "Erro ao carregar instruções",
+                                        color = MaterialTheme.colorScheme.error
+                                    )
                                 }
                             }
                         }
@@ -258,3 +316,83 @@ fun RecipeDetailsPage(
         }
     }
 }
+
+@Composable
+fun InstructionsSection(instructions: RecipeInstructions) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = "Instruções",
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            instructions.forEach { instructionItem ->
+                instructionItem.steps.forEach { step ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = "${step.number}.",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.width(32.dp)
+                        )
+                        Text(step.step)
+
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun IngredientsSection(
+    instructions: RecipeInstructions,
+    onIngredientClick: (Int,String) -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Ingredientes",
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            val uniqueIngredients = instructions
+                .flatMap { it.steps }
+                .flatMap { it.ingredients }
+                .distinctBy { it.id }
+
+            if (uniqueIngredients.isEmpty()) {
+                Text(
+                    text = "Nenhum ingrediente encontrado.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.error
+                )
+            } else {
+                // Renderiza ingredientes diretamente
+                uniqueIngredients.forEach { ingredient ->
+                    Text(
+                        text = ingredient.name,
+                        modifier = Modifier.clickable { onIngredientClick(ingredient.id, ingredient.name) },
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
+        }
+    }
+}
+
+
