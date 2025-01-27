@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.*
@@ -42,6 +43,7 @@ import kotlin.math.roundToInt
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import com.filipaeanibal.nutriapp3.models.RecipeInstructions.RecipeInstructions
+import com.filipaeanibal.nutriapp3.util.RecipeHistoryViewModel
 
 
 @Composable
@@ -49,7 +51,8 @@ fun RecipeDetailsPage(
     recipeId: Int,
     onBackClick: () -> Unit,
     viewModel: RecipeDetailsViewModel = hiltViewModel(),
-    navController: NavHostController
+    navController: NavHostController,
+    historyViewModel: RecipeHistoryViewModel = hiltViewModel()
 ) {
     // Trigger fetch when the page loads
     LaunchedEffect(recipeId) {
@@ -86,6 +89,29 @@ fun RecipeDetailsPage(
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
+                    // Botão de salvar
+                    when (val state = recipeDetailsState) {
+                        is NetworkResult.Success -> {
+                            state.data?.let { recipeDetails ->
+                                IconButton(
+                                    onClick = {
+                                        historyViewModel.saveRecipe(
+                                            recipeId = recipeDetails.id,
+                                            title = recipeDetails.title,
+                                            image = recipeDetails.image
+                                        )
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Bookmark,
+                                        contentDescription = "Salvar Receita",
+                                        tint = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
+                            }
+                        }
+                        else -> {} // Não mostrar o botão em estados de loading ou erro
+                    }
                 }
             }
         }
