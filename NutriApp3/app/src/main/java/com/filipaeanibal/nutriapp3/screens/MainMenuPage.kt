@@ -72,7 +72,7 @@ fun MainMenuPage(
                 ) {
                     // Detect Objects Button
                     Button(
-                        onClick = { onNavigate("detectarObjetos") },
+                        onClick = { onNavigate("pesquisarAlimentos") },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(60.dp),
