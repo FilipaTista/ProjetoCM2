@@ -1,4 +1,4 @@
-package com.filipaeanibal.nutriapp3.util
+package com.filipaeanibal.nutriapp3.util.RandomRecipe
 
 import retrofit2.Response
 import com.filipaeanibal.nutriapp3.models.RandomRecipe.RandomRecipe

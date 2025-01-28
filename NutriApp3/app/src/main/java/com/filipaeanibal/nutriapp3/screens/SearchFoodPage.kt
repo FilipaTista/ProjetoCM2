@@ -9,14 +9,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,7 +22,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.filipaeanibal.nutriapp3.components.AnimatedSearchBar
 import com.filipaeanibal.nutriapp3.models.IngredientSearch.Result
-import com.filipaeanibal.nutriapp3.util.IngredientSearchViewModel
+import com.filipaeanibal.nutriapp3.util.IngredientSearch.IngredientSearchViewModel
 import com.filipaeanibal.nutriapp3.util.NetworkResult
 
 @OptIn(ExperimentalMaterial3Api::class)

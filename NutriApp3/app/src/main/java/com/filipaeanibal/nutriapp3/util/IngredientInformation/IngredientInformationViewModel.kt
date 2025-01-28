@@ -1,10 +1,12 @@
-package com.filipaeanibal.nutriapp3.util
+package com.filipaeanibal.nutriapp3.util.IngredientInformation
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.filipaeanibal.nutriapp3.models.IngredientInformation.IngredientInformation
 import com.filipaeanibal.nutriapp3.models.SearchRecipesbyIngredients.SearchRecipesbyIngredientsItem
+import com.filipaeanibal.nutriapp3.util.Constants
+import com.filipaeanibal.nutriapp3.util.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,10 +20,14 @@ class IngredientInformationViewModel @Inject constructor(
     private val recipesApi: SearchRecipesbyIngredientsApi
 ) : ViewModel() {
 
-    private val _ingredientInformation = MutableStateFlow<NetworkResult<IngredientInformation>>(NetworkResult.Loading())
+    private val _ingredientInformation = MutableStateFlow<NetworkResult<IngredientInformation>>(
+        NetworkResult.Loading()
+    )
     val ingredientInformation: StateFlow<NetworkResult<IngredientInformation>> = _ingredientInformation
 
-    private val _recipesByIngredient = MutableStateFlow<NetworkResult<List<SearchRecipesbyIngredientsItem>>>(NetworkResult.Loading())
+    private val _recipesByIngredient = MutableStateFlow<NetworkResult<List<SearchRecipesbyIngredientsItem>>>(
+        NetworkResult.Loading()
+    )
     val recipesByIngredient: StateFlow<NetworkResult<List<SearchRecipesbyIngredientsItem>>> = _recipesByIngredient
 
     fun fetchIngredientInformation(ingredientId: Int) {

@@ -1,9 +1,11 @@
-package com.filipaeanibal.nutriapp3.util
+package com.filipaeanibal.nutriapp3.util.RecipeDetails
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.filipaeanibal.nutriapp3.models.RecipeDetails.RecipeDetails
 import com.filipaeanibal.nutriapp3.models.RecipeInstructions.RecipeInstructions
+import com.filipaeanibal.nutriapp3.util.Constants
+import com.filipaeanibal.nutriapp3.util.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +21,9 @@ class RecipeDetailsViewModel @Inject constructor(
     private val _recipeDetails = MutableStateFlow<NetworkResult<RecipeDetails>>(NetworkResult.Loading())
     val recipeDetails: StateFlow<NetworkResult<RecipeDetails>> = _recipeDetails
 
-    private val _recipeInstructions = MutableStateFlow<NetworkResult<RecipeInstructions>>(NetworkResult.Loading())
+    private val _recipeInstructions = MutableStateFlow<NetworkResult<RecipeInstructions>>(
+        NetworkResult.Loading()
+    )
     val recipeInstructions: StateFlow<NetworkResult<RecipeInstructions>> = _recipeInstructions
 
     fun fetchRecipeDetails(recipeId: Int) {

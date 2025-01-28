@@ -1,11 +1,10 @@
-package com.filipaeanibal.nutriapp3.util
+package com.filipaeanibal.nutriapp3.util.RandomRecipe
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.util.query
 import com.filipaeanibal.nutriapp3.models.RandomRecipe.RandomRecipe
-import com.filipaeanibal.nutriapp3.models.RandomRecipe.Recipe
+import com.filipaeanibal.nutriapp3.util.Constants
+import com.filipaeanibal.nutriapp3.util.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -2,7 +2,6 @@
 
 package com.filipaeanibal.nutriapp3.screens
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -17,19 +16,16 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.filipaeanibal.nutriapp3.util.NetworkResult
-import com.filipaeanibal.nutriapp3.util.RecipeDetailsViewModel
+import com.filipaeanibal.nutriapp3.util.RecipeDetails.RecipeDetailsViewModel
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.outlined.Favorite
@@ -40,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
@@ -48,15 +43,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import kotlin.math.roundToInt
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import com.filipaeanibal.nutriapp3.components.NutrientColors
 import com.filipaeanibal.nutriapp3.components.NutrientData
 import com.filipaeanibal.nutriapp3.components.NutrientPieChart
 import com.filipaeanibal.nutriapp3.models.RecipeInstructions.RecipeInstructions
-import com.filipaeanibal.nutriapp3.util.RecipeHistoryViewModel
-import kotlinx.coroutines.launch
+import com.filipaeanibal.nutriapp3.util.Historico.RecipeHistoryViewModel
 
 
 @Composable

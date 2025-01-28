@@ -22,7 +22,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.filipaeanibal.nutriapp3.models.SavedRecipe
 import com.filipaeanibal.nutriapp3.util.NetworkResult
-import com.filipaeanibal.nutriapp3.util.RecipeHistoryViewModel
+import com.filipaeanibal.nutriapp3.util.Historico.RecipeHistoryViewModel
 import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)

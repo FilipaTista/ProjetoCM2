@@ -1,5 +1,4 @@
 package com.filipaeanibal.nutriapp3.screens
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,9 +7,15 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.People
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Cake
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Coffee
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.LocalFlorist
+import androidx.compose.material.icons.filled.LocalPizza
+import androidx.compose.material.icons.filled.RamenDining
+import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.*
@@ -26,13 +31,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.filipaeanibal.nutriapp3.models.RandomRecipe.RandomRecipe
 import com.filipaeanibal.nutriapp3.models.RandomRecipe.Recipe
 import com.filipaeanibal.nutriapp3.util.NetworkResult
-import com.filipaeanibal.nutriapp3.util.RecipeViewModel
+import com.filipaeanibal.nutriapp3.util.RandomRecipe.RecipeViewModel
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,16 +48,22 @@ import com.filipaeanibal.nutriapp3.components.AnimatedSearchBar
 @Composable
 fun RecipeGenPage(
     navController: NavController,
-    viewModel: RecipeViewModel = hiltViewModel()) {
+    viewModel: RecipeViewModel = hiltViewModel(),
+    onBackClick: () -> Unit
+) {
     val recipeState by viewModel.recipes.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
+    var searchTags by remember { mutableStateOf(listOf<String>()) }
     var selectedType by remember { mutableStateOf("") }
+    var showFilterDrawer by remember { mutableStateOf(false) }
+
     val mealTypes = listOf(
-        "main course", "side dish", "dessert",
-        "appetizer", "salad", "bread",
-        "breakfast", "soup", "beverage",
-        "breakfast", "soup", "beverage",
-        "sauce", "marinade", "snack", "drink"
+        "main course" to Icons.Default.Restaurant,
+        "dessert" to Icons.Default.Cake,
+        "breakfast" to Icons.Default.Coffee,
+        "soup" to Icons.Default.RamenDining,
+        "salad" to Icons.Default.LocalFlorist,
+        "snack" to Icons.Default.LocalPizza
     )
 
     // Initial fetch when opening the page
@@ -70,59 +79,141 @@ fun RecipeGenPage(
                     .background(MaterialTheme.colorScheme.primary)
                     .padding(16.dp)
             ) {
-                Text(
-                    text = "Descobrir Receitas",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
-                // Search and Filter Row
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    AnimatedSearchBar(
-                        query = searchQuery,
-                        onQueryChange = { searchQuery = it },
-                        onSearch = {
-                            if (searchQuery.isNotBlank()) {
-                                viewModel.fetchRandomRecipesByType(
-                                    type = searchQuery,
-                                    number = 2
-                                )
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = "Search recipes..."
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier.padding(end = 16.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Voltar",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+
+                    Text(
+                        text = "Descobrir Receitas",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
+
+                    IconButton(onClick = {
+                        showFilterDrawer = true
+                        selectedType = ""
+                    }) {
+                        Icon(
+                            Icons.Default.FilterList,
+                            contentDescription = "Mais filtros",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+
+                // Search Bar
+                AnimatedSearchBar(
+                    query = searchQuery,
+                    onQueryChange = { searchQuery = it },
+                    onSearch = {
+                        if (searchQuery.isNotBlank()) {
+                            selectedType = ""
+                            val newTags = searchQuery.split(" ").filter { it.isNotBlank() }
+                            searchTags = (searchTags + newTags).distinct()
+                            searchQuery = ""
+
+                            val tagsString = searchTags.joinToString(",")
+                            viewModel.fetchRandomRecipesByType(
+                                type = tagsString,
+                                number = 2
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    placeholder = "Search recipes..."
+                )
+
+                // Search Tags
+                if (searchTags.isNotEmpty()) {
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    ) {
+                        items(searchTags) { tag ->
+                            FilterChip(
+                                selected = true,
+                                onClick = {
+                                    searchTags = searchTags - tag
+                                    if (searchTags.isEmpty()) {
+                                        viewModel.fetchRandomRecipes(number = 2)
+                                    } else {
+                                        // Combine remaining tags with commas
+                                        val tagsString = searchTags.joinToString(",").lowercase()
+                                        viewModel.fetchRandomRecipesByType(
+                                            type = tagsString,
+                                            number = 2
+                                        )
+                                    }
+                                },
+                                label = { Text(tag) },
+                                trailingIcon = {
+                                    Icon(
+                                        Icons.Default.Close,
+                                        contentDescription = "Remove $tag",
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    containerColor = MaterialTheme.colorScheme.surface,
+                                    labelColor = MaterialTheme.colorScheme.onSurface,
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                )
+                            )
+                        }
+                    }
                 }
 
                 // Meal Type Chips
                 LazyRow(
-                    modifier = Modifier.padding(top = 12.dp),
+                    modifier = Modifier.padding(top = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(mealTypes) { type ->
+                    items(mealTypes) { (type, icon) ->
                         FilterChip(
                             selected = selectedType == type,
                             onClick = {
-                                selectedType = if (selectedType == type) "" else type
-                                viewModel.fetchRandomRecipesByType(
-                                    type = type,
-                                    number = 2
+                                val newType = if (selectedType == type) "" else type.lowercase()
+                                selectedType = newType
+                                searchTags = emptyList() // Clear search tags when selecting meal type
+
+                                if (newType.isEmpty()) {
+                                    viewModel.fetchRandomRecipes(number = 2)
+                                } else {
+                                    viewModel.fetchRandomRecipesByType(
+                                        type = newType,
+                                        number = 2
+                                    )
+                                }
+                            },
+                            label = { Text(type) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
                                 )
                             },
-                            label = { Text(type)},
                             colors = FilterChipDefaults.filterChipColors(
                                 containerColor = MaterialTheme.colorScheme.surface,
                                 labelColor = MaterialTheme.colorScheme.onSurface,
                                 selectedContainerColor = MaterialTheme.colorScheme.primary,
                                 selectedLabelColor = MaterialTheme.colorScheme.onPrimary
-
                             )
-
                         )
                     }
                 }
@@ -146,15 +237,16 @@ fun RecipeGenPage(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(recipes) { recipe ->
-                            RecipeCard(recipe = recipe,
+                            RecipeCard(
+                                recipe = recipe,
                                 onClick = {
                                     navController.navigate("recipeDetails/${recipe.id}")
-                                })
+                                }
+                            )
                         }
                     }
                 }
                 is NetworkResult.Error -> {
-                    Log.e("RecipeError", "Error: ${state.message}")
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -167,9 +259,111 @@ fun RecipeGenPage(
                 }
             }
         }
+
+        // Filter Drawer
+        if (showFilterDrawer) {
+            RecipeFilterDrawer(
+                onDismiss = { showFilterDrawer = false },
+                onApplyFilters = { filters ->
+                    selectedType = "" // Clear meal type selection
+                    viewModel.fetchRandomRecipesByType(
+                        type = filters,  // Already formatted with commas
+                        number = 2
+                    )
+                    // Split the filters for UI display
+                    searchTags = filters.split(",")
+                    showFilterDrawer = false
+                }
+            )
+        }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RecipeFilterDrawer(
+    onDismiss: () -> Unit,
+    onApplyFilters: (String) -> Unit
+) {
+    var selectedCuisine by remember { mutableStateOf<String?>(null) }
+    var selectedDiet by remember { mutableStateOf<String?>(null) }
+
+    val cuisines = listOf(
+        "Italian", "Mexican", "Chinese", "Mediterranean", "Indian", "French"
+    )
+    val diets = listOf(
+        "Gluten Free", "Ketogenic", "Vegetarian", "Vegan", "Pescetarian", "Paleo"
+    )
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        modifier = Modifier.fillMaxHeight(0.7f)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                "Cuisines",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            LazyRow(
+                modifier = Modifier.padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(cuisines) { cuisine ->
+                    FilterChip(
+                        selected = selectedCuisine == cuisine,
+                        onClick = {
+                            selectedCuisine = if (selectedCuisine == cuisine) null else cuisine
+                        },
+                        label = { Text(cuisine) }
+                    )
+                }
+            }
+
+            Text(
+                "Diets",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(diets) { diet ->
+                    FilterChip(
+                        selected = selectedDiet == diet,
+                        onClick = {
+                            selectedDiet = if (selectedDiet == diet) null else diet
+                        },
+                        label = { Text(diet) }
+                    )
+                }
+            }
+
+            Button(
+                onClick = {
+                    val selectedFilters = listOfNotNull(
+                        selectedCuisine?.lowercase(),
+                        selectedDiet?.lowercase()
+                    ).joinToString(",")
+
+                    if (selectedFilters.isNotEmpty()) {
+                        onApplyFilters(selectedFilters)
+                    }
+                },
+                enabled = selectedCuisine != null || selectedDiet != null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+            ) {
+                Text("Apply Filters")
+            }
+        }
+    }
+}
 @Composable
 fun RecipeCard(
     recipe: Recipe,

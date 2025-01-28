@@ -73,7 +73,9 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
         // RecipeGenPage
-        composable("gerarReceitas") { RecipeGenPage(navController) }
+        composable("gerarReceitas") { RecipeGenPage(
+            onBackClick = { navController.popBackStack() },
+            navController= navController) }
 
         // RecipeDetailsPage
         composable(
