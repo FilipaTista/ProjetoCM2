@@ -32,7 +32,7 @@ fun MainMenuPage(onNavigate: (String) -> Unit, navController: NavHostController,
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(onClick = { onNavigate("detectarObjetos") }) {
+            Button(onClick = { onNavigate("pesquisarAlimentos") }) {
                 Text("Detetar Objetos")
             }
             Spacer(modifier = Modifier.height(8.dp))

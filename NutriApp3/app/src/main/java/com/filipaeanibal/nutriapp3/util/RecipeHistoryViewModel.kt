@@ -17,10 +17,13 @@ import javax.inject.Inject
 @HiltViewModel
 class RecipeHistoryViewModel @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val auth: FirebaseAuth  // Mudança aqui: injetar FirebaseAuth ao invés de AuthViewModel
+    private val auth: FirebaseAuth
 ) : ViewModel() {
     private val _savedRecipes = MutableStateFlow<NetworkResult<List<SavedRecipe>>>(NetworkResult.Loading())
     val savedRecipes: StateFlow<NetworkResult<List<SavedRecipe>>> = _savedRecipes
+
+    private val _isRecipeSaved = MutableStateFlow<Boolean>(false)
+    val isRecipeSaved: StateFlow<Boolean> = _isRecipeSaved
 
     init {
         loadSavedRecipes()
@@ -29,22 +32,46 @@ class RecipeHistoryViewModel @Inject constructor(
     fun saveRecipe(recipeId: Int, title: String, image: String) {
         viewModelScope.launch {
             try {
-                val userId = auth.currentUser?.uid ?: return@launch  // Usando Firebase Auth diretamente
+                val userId = auth.currentUser?.uid ?: return@launch
 
-                val savedRecipe = SavedRecipe(
-                    id = recipeId,
-                    userId = userId,
-                    title = title,
-                    image = image
-                )
+                if (_isRecipeSaved.value) {
+                    deleteRecipe(recipeId)
+                } else {
+                    val savedRecipe = SavedRecipe(
+                        id = recipeId,
+                        userId = userId,
+                        title = title,
+                        image = image
+                    )
 
-                firestore.collection("recipeHistory")
-                    .add(savedRecipe)
-                    .await()
+                    firestore.collection("recipeHistory")
+                        .add(savedRecipe)
+                        .await()
+                }
 
+                // Toggle the saved state
+                _isRecipeSaved.value = !_isRecipeSaved.value
                 loadSavedRecipes()
             } catch (e: Exception) {
                 _savedRecipes.value = NetworkResult.Error("Erro ao salvar receita: ${e.message}")
+            }
+        }
+    }
+
+    fun checkIfRecipeIsSaved(recipeId: Int) {
+        viewModelScope.launch {
+            try {
+                val userId = auth.currentUser?.uid ?: return@launch
+
+                val query = firestore.collection("recipeHistory")
+                    .whereEqualTo("userId", userId)
+                    .whereEqualTo("id", recipeId)
+                    .get()
+                    .await()
+
+                _isRecipeSaved.value = !query.documents.isEmpty()
+            } catch (e: Exception) {
+                _isRecipeSaved.value = false
             }
         }
     }
@@ -54,7 +81,7 @@ class RecipeHistoryViewModel @Inject constructor(
             try {
                 _savedRecipes.value = NetworkResult.Loading()
 
-                val userId = auth.currentUser?.uid ?: return@launch  // Usando Firebase Auth diretamente
+                val userId = auth.currentUser?.uid ?: return@launch
 
                 val recipes = firestore.collection("recipeHistory")
                     .whereEqualTo("userId", userId)

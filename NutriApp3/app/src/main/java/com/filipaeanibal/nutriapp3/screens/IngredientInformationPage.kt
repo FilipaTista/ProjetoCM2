@@ -1,5 +1,7 @@
 package com.filipaeanibal.nutriapp3.screens
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +32,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,6 +44,9 @@ import coil.compose.AsyncImage
 import kotlin.math.roundToInt
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
+import com.filipaeanibal.nutriapp3.components.NutrientColors
+import com.filipaeanibal.nutriapp3.components.NutrientData
+import com.filipaeanibal.nutriapp3.components.NutrientPieChart
 import com.filipaeanibal.nutriapp3.models.SearchRecipesbyIngredients.SearchRecipesbyIngredientsItem
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,6 +65,7 @@ fun IngredientInformationPage(
 
     val ingredientState by viewModel.ingredientInformation.collectAsState()
     val recipebyIngredientState by viewModel.recipesByIngredient.collectAsState()
+    var selectedAmount by remember { mutableStateOf(100.0) }
 
     Scaffold(
         topBar = {
@@ -93,6 +103,7 @@ fun IngredientInformationPage(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            var selectedAmount by remember { mutableStateOf(100.0) }
             LazyColumn(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -110,42 +121,98 @@ fun IngredientInformationPage(
                     }
                     is NetworkResult.Success -> {
                         val ingredient = state.data
-                        // Nome do ingrediente
+                        //imagem do ingrediente
                         item {
-                            Text(
-                                text = ingredient.name,
-                                style = MaterialTheme.typography.titleLarge,
-                                modifier = Modifier.padding(bottom = 8.dp)
+                            var isVisible by remember { mutableStateOf(false) }
+                            LaunchedEffect(Unit) {
+                                isVisible = true
+                            }
+                            val alpha by animateFloatAsState(
+                                targetValue = if (isVisible) 1f else 0f,
+                                animationSpec = tween(durationMillis = 500)
                             )
-                        }
-
-                        // Informação Nutricional
-                        item {
-                            ingredient.nutrition?.nutrients?.let { nutrients ->
-                                val nutrientOrder = listOf("Calories", "Protein", "Carbohydrates", "Fat")
-                                val mainNutrients = nutrients.filter { it.name in nutrientOrder }
-                                    .sortedBy { nutrientOrder.indexOf(it.name) }
-
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(16.dp)
-                                ) {
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(300.dp)
+                                    .alpha(alpha),
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = CardDefaults.cardElevation(8.dp)
+                            ) {
+                                Box(modifier = Modifier.fillMaxSize()) {
+                                    // Background Image
+                                    ingredient.image?.let {
+                                        AsyncImage(
+                                            model = "https://spoonacular.com/cdn/ingredients_250x250/${ingredient.image}",
+                                            contentDescription = ingredient.name,
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+                                    }
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .background(
+                                                Brush.verticalGradient(
+                                                    colors = listOf(
+                                                        Color.Transparent,
+                                                        Color.Black.copy(alpha = 0.8f))
+                                                )
+                                            )
+                                    )
                                     Column(
-                                        modifier = Modifier.padding(16.dp),
-                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(16.dp),
+                                        verticalArrangement = Arrangement.Bottom
                                     ) {
                                         Text(
-                                            text = "Informação Nutricional",
-                                            style = MaterialTheme.typography.titleMedium
+                                            text = ingredient.name,
+                                            style = MaterialTheme.typography.headlineSmall,
+                                            color = Color.White,
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis
                                         )
-                                        mainNutrients.forEach { nutrient ->
-                                            Text("${nutrient.name}: ${nutrient.amount.roundToInt()} ${nutrient.unit}")
-                                        }
                                     }
+
                                 }
                             }
                         }
+                        item {
+                            ingredient.nutrition?.nutrients?.let { nutrients ->
+                                val mainNutrients = listOf(
+                                    NutrientData(
+                                        name = "Protein",
+                                        amount = nutrients.find { it.name == "Protein" }?.amount ?: 0.0,
+                                        unit = "g",
+                                        color = NutrientColors.Protein
+                                    ),
+                                    NutrientData(
+                                        name = "Carbs",
+                                        amount = nutrients.find { it.name == "Carbohydrates" }?.amount ?: 0.0,
+                                        unit = "g",
+                                        color = NutrientColors.Carbs
+                                    ),
+                                    NutrientData(
+                                        name = "Fat",
+                                        amount = nutrients.find { it.name == "Fat" }?.amount ?: 0.0,
+                                        unit = "g",
+                                        color = NutrientColors.Fat
+                                    )
+                                )
 
+                                val calories = nutrients.find { it.name == "Calories" }?.amount?.toInt() ?: 0
+
+                                NutrientPieChart(
+                                    nutrients = mainNutrients,
+                                    calories = calories,
+                                    defaultAmount = 100.0,  // Começa com 100g
+                                    onAmountChanged = { selectedAmount = it },
+                                    isServings = false,  // É em gramas
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
                         // Receitas relacionadas
                         item {
                             Text(

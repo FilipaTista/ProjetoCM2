@@ -3,6 +3,9 @@
 package com.filipaeanibal.nutriapp3.screens
 
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -29,11 +32,17 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.Text
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
@@ -42,8 +51,12 @@ import coil.compose.AsyncImage
 import kotlin.math.roundToInt
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
+import com.filipaeanibal.nutriapp3.components.NutrientColors
+import com.filipaeanibal.nutriapp3.components.NutrientData
+import com.filipaeanibal.nutriapp3.components.NutrientPieChart
 import com.filipaeanibal.nutriapp3.models.RecipeInstructions.RecipeInstructions
 import com.filipaeanibal.nutriapp3.util.RecipeHistoryViewModel
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -58,9 +71,11 @@ fun RecipeDetailsPage(
     LaunchedEffect(recipeId) {
         viewModel.fetchRecipeDetails(recipeId)
         viewModel.fetchRecipeInstructions(recipeId)
+        historyViewModel.checkIfRecipeIsSaved(recipeId)
     }
 
     val recipeDetailsState by viewModel.recipeDetails.collectAsState()
+    val isRecipeSaved by historyViewModel.isRecipeSaved.collectAsState()
 
     Scaffold(
         topBar = {
@@ -89,7 +104,6 @@ fun RecipeDetailsPage(
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
-                    // Botão de salvar
                     when (val state = recipeDetailsState) {
                         is NetworkResult.Success -> {
                             state.data?.let { recipeDetails ->
@@ -100,12 +114,22 @@ fun RecipeDetailsPage(
                                             title = recipeDetails.title,
                                             image = recipeDetails.image
                                         )
+                                        Toast.makeText(
+                                            navController.context,
+                                            if (isRecipeSaved) "Receita removida dos salvos" else "Receita salva",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                                 ) {
+                                    val tint = if (isRecipeSaved) {
+                                        Color.Yellow
+                                    } else {
+                                        MaterialTheme.colorScheme.onPrimary
+                                    }
                                     Icon(
                                         imageVector = Icons.Default.Bookmark,
-                                        contentDescription = "Salvar Receita",
-                                        tint = MaterialTheme.colorScheme.onPrimary
+                                        contentDescription = if (isRecipeSaved) "Remover dos Salvos" else "Salvar Receita",
+                                        tint = tint
                                     )
                                 }
                             }
@@ -129,15 +153,26 @@ fun RecipeDetailsPage(
                 }
                 is NetworkResult.Success -> {
                     val recipeDetails = state.data
+                    var selectedServings by remember { mutableStateOf(1.0) }
                     LazyColumn(
                         modifier = Modifier.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         item {
+                            var isVisible by remember { mutableStateOf(false) }
+                            LaunchedEffect(Unit) {
+                                isVisible = true
+                            }
+
+                            val alpha by animateFloatAsState(
+                                targetValue = if (isVisible) 1f else 0f,
+                                animationSpec = tween(durationMillis = 500)
+                            )
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(300.dp),
+                                    .height(300.dp)
+                                    .alpha(alpha),
                                 shape = RoundedCornerShape(16.dp),
                                 elevation = CardDefaults.cardElevation(8.dp)
                             ) {
@@ -200,7 +235,6 @@ fun RecipeDetailsPage(
                                                     )
                                                 },
                                             )
-
                                             // Servings Chip
                                             RecipeChip(
                                                 icon = {
@@ -213,6 +247,21 @@ fun RecipeDetailsPage(
                                                 label = {
                                                     Text(
                                                         "${recipeDetails.servings} porções",
+                                                        color = Color.White
+                                                    )
+                                                },
+                                            )
+                                            RecipeChip(
+                                                icon = {
+                                                    Icon(
+                                                        Icons.Outlined.Favorite,
+                                                        contentDescription = "Likes",
+                                                        tint = Color.White
+                                                    )
+                                                },
+                                                label = {
+                                                    Text(
+                                                        "${recipeDetails.aggregateLikes} likes",
                                                         color = Color.White
                                                     )
                                                 },
@@ -231,60 +280,40 @@ fun RecipeDetailsPage(
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
                         }
-
-                        // Caloric Breakdown
-                        item {
-                            recipeDetails.nutrition?.caloricBreakdown?.let { breakdown ->
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(16.dp)
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(16.dp),
-                                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        Text(
-                                            text = "Caloric Distribution",
-                                            style = MaterialTheme.typography.titleMedium
-                                        )
-                                        Text("Proteins: ${breakdown.percentProtein.roundToInt()}%")
-                                        Text("Carbohydrates: ${breakdown.percentCarbs.roundToInt()}%")
-                                        Text("Fats: ${breakdown.percentFat.roundToInt()}%")
-                                    }
-                                }
-                            }
-                        }
-
                         // Key Nutrients
                         item {
                             recipeDetails.nutrition?.nutrients?.let { nutrients ->
-                                // Definir a ordem desejada
-                                val nutrientOrder = listOf("Calories", "Protein", "Carbohydrates", "Fat")
+                                val mainNutrients = listOf(
+                                    NutrientData(
+                                        name = "Protein",
+                                        amount = nutrients.find { it.name == "Protein" }?.amount ?: 0.0,
+                                        unit = "g",
+                                        color = NutrientColors.Protein
+                                    ),
+                                    NutrientData(
+                                        name = "Carbs",
+                                        amount = nutrients.find { it.name == "Carbohydrates" }?.amount ?: 0.0,
+                                        unit = "g",
+                                        color = NutrientColors.Carbs
+                                    ),
+                                    NutrientData(
+                                        name = "Fat",
+                                        amount = nutrients.find { it.name == "Fat" }?.amount ?: 0.0,
+                                        unit = "g",
+                                        color = NutrientColors.Fat
+                                    )
+                                )
 
-                                // Filtrar e ordenar os nutrientes
-                                val mainNutrients = nutrients.filter { nutrient ->
-                                    nutrient.name in nutrientOrder
-                                }.sortedBy { nutrient ->
-                                    nutrientOrder.indexOf(nutrient.name)
-                                }
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(16.dp)
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(16.dp),
-                                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        Text(
-                                            text = "Nutritional Information",
-                                            style = MaterialTheme.typography.titleMedium
-                                        )
-                                        // Exibir os nutrientes filtrados e ordenados
-                                        mainNutrients.forEach { nutrient ->
-                                            Text("${nutrient.name}: ${nutrient.amount.roundToInt()} ${nutrient.unit}")
-                                        }
-                                    }
-                                }
+                                val calories = nutrients.find { it.name == "Calories" }?.amount?.toInt() ?: 0
+
+                                NutrientPieChart(
+                                    nutrients = mainNutrients,
+                                    calories = calories,
+                                    defaultAmount = 1.0,  // Começa com 1 serving
+                                    onAmountChanged = { selectedServings = it },
+                                    isServings = true,  // É em servings
+                                    modifier = Modifier.fillMaxWidth()
+                                )
                             }
                         }
                         item {
@@ -408,17 +437,28 @@ fun IngredientsSection(
                     color = MaterialTheme.colorScheme.error
                 )
             } else {
-                // Renderiza ingredientes diretamente
                 uniqueIngredients.forEach { ingredient ->
-                    Text(
-                        text = ingredient.name,
-                        modifier = Modifier.clickable { onIngredientClick(ingredient.id, ingredient.name) },
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+                    var checked by remember { mutableStateOf(false) }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = ingredient.name,
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { onIngredientClick(ingredient.id, ingredient.name) },
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Checkbox(
+                            checked = checked,
+                            onCheckedChange = { isChecked ->
+                                checked = isChecked
+                            }
+                        )
+                    }
                 }
             }
         }
     }
 }
-
-

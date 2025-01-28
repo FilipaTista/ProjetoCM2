@@ -38,6 +38,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
+import com.filipaeanibal.nutriapp3.components.AnimatedSearchBar
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,6 +52,7 @@ fun RecipeGenPage(
     val mealTypes = listOf(
         "main course", "side dish", "dessert",
         "appetizer", "salad", "bread",
+        "breakfast", "soup", "beverage",
         "breakfast", "soup", "beverage",
         "sauce", "marinade", "snack", "drink"
     )
@@ -81,30 +83,10 @@ fun RecipeGenPage(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Search TextField
-                    TextField(
-                        value = searchQuery,
-                        onValueChange = { searchQuery = it },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(56.dp),
-                        placeholder = { Text("Search") },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Search,
-                                contentDescription = "Search",
-                            )
-                        },
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        ),
-                        shape = RoundedCornerShape(12.dp),
-                        singleLine = true
-                    )
-
-                    // Search Button
-                    Button(
-                        onClick = {
+                    AnimatedSearchBar(
+                        query = searchQuery,
+                        onQueryChange = { searchQuery = it },
+                        onSearch = {
                             if (searchQuery.isNotBlank()) {
                                 viewModel.fetchRandomRecipesByType(
                                     type = searchQuery,
@@ -112,10 +94,9 @@ fun RecipeGenPage(
                                 )
                             }
                         },
-                        modifier = Modifier.height(56.dp)
-                    ) {
-                        Text("Search")
-                    }
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = "Search recipes..."
+                    )
                 }
 
                 // Meal Type Chips
