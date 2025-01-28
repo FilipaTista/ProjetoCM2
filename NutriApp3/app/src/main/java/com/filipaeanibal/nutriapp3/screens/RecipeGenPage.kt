@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.LocalFlorist
 import androidx.compose.material.icons.filled.LocalPizza
 import androidx.compose.material.icons.filled.RamenDining
 import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.*
@@ -66,9 +67,8 @@ fun RecipeGenPage(
         "snack" to Icons.Default.LocalPizza
     )
 
-    // Initial fetch when opening the page
     LaunchedEffect(Unit) {
-        viewModel.fetchRandomRecipes(number = 2)
+        viewModel.fetchRandomRecipes(number = 3)
     }
 
     Scaffold(
@@ -90,13 +90,13 @@ fun RecipeGenPage(
                     ) {
                         Icon(
                             Icons.Default.ArrowBack,
-                            contentDescription = "Voltar",
+                            contentDescription = "Back",
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
 
                     Text(
-                        text = "Descobrir Receitas",
+                        text = "Find Recipes",
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
@@ -107,13 +107,11 @@ fun RecipeGenPage(
                     }) {
                         Icon(
                             Icons.Default.FilterList,
-                            contentDescription = "Mais filtros",
+                            contentDescription = "More Filters",
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
-
-                // Search Bar
                 AnimatedSearchBar(
                     query = searchQuery,
                     onQueryChange = { searchQuery = it },
@@ -127,7 +125,7 @@ fun RecipeGenPage(
                             val tagsString = searchTags.joinToString(",")
                             viewModel.fetchRandomRecipesByType(
                                 type = tagsString,
-                                number = 2
+                                number = 3
                             )
                         }
                     },
@@ -136,8 +134,6 @@ fun RecipeGenPage(
                         .padding(vertical = 8.dp),
                     placeholder = "Search recipes..."
                 )
-
-                // Search Tags
                 if (searchTags.isNotEmpty()) {
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -149,13 +145,12 @@ fun RecipeGenPage(
                                 onClick = {
                                     searchTags = searchTags - tag
                                     if (searchTags.isEmpty()) {
-                                        viewModel.fetchRandomRecipes(number = 2)
+                                        viewModel.fetchRandomRecipes(number = 3)
                                     } else {
-                                        // Combine remaining tags with commas
                                         val tagsString = searchTags.joinToString(",").lowercase()
                                         viewModel.fetchRandomRecipesByType(
                                             type = tagsString,
-                                            number = 2
+                                            number = 3
                                         )
                                     }
                                 },
@@ -177,8 +172,6 @@ fun RecipeGenPage(
                         }
                     }
                 }
-
-                // Meal Type Chips
                 LazyRow(
                     modifier = Modifier.padding(top = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -189,14 +182,14 @@ fun RecipeGenPage(
                             onClick = {
                                 val newType = if (selectedType == type) "" else type.lowercase()
                                 selectedType = newType
-                                searchTags = emptyList() // Clear search tags when selecting meal type
+                                searchTags = emptyList()
 
                                 if (newType.isEmpty()) {
-                                    viewModel.fetchRandomRecipes(number = 2)
+                                    viewModel.fetchRandomRecipes(number = 3)
                                 } else {
                                     viewModel.fetchRandomRecipesByType(
                                         type = newType,
-                                        number = 2
+                                        number = 3
                                     )
                                 }
                             },
@@ -252,25 +245,22 @@ fun RecipeGenPage(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = state.message ?: "Erro desconhecido",
+                            text = state.message ?: "An error occurred",
                             color = MaterialTheme.colorScheme.error
                         )
                     }
                 }
             }
         }
-
-        // Filter Drawer
         if (showFilterDrawer) {
             RecipeFilterDrawer(
                 onDismiss = { showFilterDrawer = false },
                 onApplyFilters = { filters ->
-                    selectedType = "" // Clear meal type selection
+                    selectedType = ""
                     viewModel.fetchRandomRecipesByType(
-                        type = filters,  // Already formatted with commas
-                        number = 2
+                        type = filters,
+                        number = 3
                     )
-                    // Split the filters for UI display
                     searchTags = filters.split(",")
                     showFilterDrawer = false
                 }
@@ -323,7 +313,6 @@ fun RecipeFilterDrawer(
                     )
                 }
             }
-
             Text(
                 "Diets",
                 style = MaterialTheme.typography.titleLarge,
@@ -342,7 +331,6 @@ fun RecipeFilterDrawer(
                     )
                 }
             }
-
             Button(
                 onClick = {
                     val selectedFilters = listOfNotNull(
@@ -387,8 +375,6 @@ fun RecipeCard(
                     modifier = Modifier.fillMaxSize()
                 )
             }
-
-            // Gradient Overlay
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -401,8 +387,6 @@ fun RecipeCard(
                         )
                     )
             )
-
-            // Recipe Details
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -420,12 +404,11 @@ fun RecipeCard(
                     modifier = Modifier.padding(top = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Time Chip
                     RecipeChip(
                         icon = {
                             Icon(
                                 Icons.Outlined.Timer,
-                                contentDescription = "Tempo de preparo",
+                                contentDescription = "Preparation Time",
                                 tint = Color.White
                             )
                         },
@@ -436,19 +419,32 @@ fun RecipeCard(
                             )
                         },
                     )
-
-                    // Servings Chip
                     RecipeChip(
                         icon = {
                             Icon(
                                 Icons.Outlined.People,
-                                contentDescription = "Porções",
+                                contentDescription = "Servings",
                                 tint = Color.White
                             )
                         },
                         label = {
                             Text(
-                                "${recipe.servings} porções",
+                                "${recipe.servings} servings",
+                                color = Color.White
+                            )
+                        },
+                    )
+                    RecipeChip(
+                        icon = {
+                            Icon(
+                                Icons.Outlined.Favorite,
+                                contentDescription = "Likes",
+                                tint = Color.White
+                            )
+                        },
+                        label = {
+                            Text(
+                                "${recipe.aggregateLikes} likes",
                                 color = Color.White
                             )
                         },

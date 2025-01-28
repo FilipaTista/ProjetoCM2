@@ -63,7 +63,6 @@ fun IngredientInformationPage(
 
     val ingredientState by viewModel.ingredientInformation.collectAsState()
     val recipebyIngredientState by viewModel.recipesByIngredient.collectAsState()
-    var selectedAmount by remember { mutableStateOf(100.0) }
 
     Scaffold(
         topBar = {
@@ -83,12 +82,12 @@ fun IngredientInformationPage(
                     ) {
                         Icon(
                             Icons.Default.ArrowBack,
-                            contentDescription = "Voltar",
+                            contentDescription = "Back",
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                     Text(
-                        text = "Detalhes do Ingrediente",
+                        text = "Ingredient Details",
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
@@ -119,7 +118,6 @@ fun IngredientInformationPage(
                     }
                     is NetworkResult.Success -> {
                         val ingredient = state.data
-                        //imagem do ingrediente
                         item {
                             var isVisible by remember { mutableStateOf(false) }
                             LaunchedEffect(Unit) {
@@ -200,21 +198,20 @@ fun IngredientInformationPage(
                                 )
 
                                 val calories = nutrients.find { it.name == "Calories" }?.amount?.toInt() ?: 0
-
+                                // defaultAmount is 100g
                                 NutrientPieChart(
                                     nutrients = mainNutrients,
                                     calories = calories,
-                                    defaultAmount = 100.0,  // Começa com 100g
+                                    defaultAmount = 100.0,
                                     onAmountChanged = { selectedAmount = it },
-                                    isServings = false,  // É em gramas
+                                    isServings = false,
                                     modifier = Modifier.fillMaxWidth()
                                 )
                             }
                         }
-                        // Receitas relacionadas
                         item {
                             Text(
-                                text = "Receitas com este Ingrediente",
+                                text = "Recipes with this Ingredient",
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
@@ -223,14 +220,12 @@ fun IngredientInformationPage(
                     is NetworkResult.Error -> {
                         item {
                             Text(
-                                text = state.message ?: "Erro ao carregar detalhes do ingrediente.",
+                                text = state.message ?: "Error loading ingredient details",
                                 color = MaterialTheme.colorScheme.error
                             )
                         }
                     }
                 }
-
-                // Receitas
                 item {
                     when (val state = recipebyIngredientState) {
                         is NetworkResult.Loading -> {
@@ -240,7 +235,7 @@ fun IngredientInformationPage(
                             val recipes = state.data.orEmpty()
                             if (recipes.isEmpty()) {
                                 Text(
-                                    text = "Nenhuma receita encontrada.",
+                                    text = "No recipes found",
                                     color = MaterialTheme.colorScheme.error
                                 )
                             } else {
@@ -257,7 +252,7 @@ fun IngredientInformationPage(
                         }
                         is NetworkResult.Error -> {
                             Text(
-                                text = state.message ?: "Erro ao carregar receitas.",
+                                text = state.message ?: "Error loading recipes",
                                 color = MaterialTheme.colorScheme.error
                             )
                         }
@@ -267,6 +262,7 @@ fun IngredientInformationPage(
         }
     }
 }
+
 @Composable
 fun RecipeCardByIngredient(recipe: SearchRecipesbyIngredientsItem, navController: NavHostController) {
     Card(

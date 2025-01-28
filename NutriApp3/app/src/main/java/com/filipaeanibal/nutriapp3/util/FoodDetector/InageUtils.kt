@@ -12,9 +12,9 @@ fun ImageProxy.toBitmap(): Bitmap {
     return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 }
 fun preprocessBitmap(bitmap: Bitmap): FloatArray {
-    val resizedBitmap = Bitmap.createScaledBitmap(bitmap, 160, 160, true) // Alterado para 160x160
+    val resizedBitmap = Bitmap.createScaledBitmap(bitmap, 160, 160, true)
 
-    val floatArray = FloatArray(3 * 160 * 160) // Alterado para corresponder ao tamanho 160x160
+    val floatArray = FloatArray(3 * 160 * 160)
     var index = 0
     for (y in 0 until 160) {
         for (x in 0 until 160) {

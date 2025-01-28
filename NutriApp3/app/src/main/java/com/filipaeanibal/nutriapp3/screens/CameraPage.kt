@@ -72,7 +72,7 @@ fun CameraPage(
                                 detectedFood = food
                             }
                         } catch (e: Exception) {
-                            errorMessage = "Erro ao processar imagem: ${e.localizedMessage}"
+                            errorMessage = "Error processing image: ${e.localizedMessage}"
                             e.printStackTrace()
                         }
                     }
@@ -110,7 +110,7 @@ fun CameraPage(
             }
         }
     } else {
-        Text("É necessário permitir o uso da câmara para continuar.")
+        Text("Camera permission is required to continue")
     }
 }
 
@@ -190,7 +190,6 @@ fun processCapturedImage(
         val detectedFood = getLabelFromOutput(output)
         val boundingBox = calculateBoundingBox(output)
 
-        // Adicione logs para verificar os valores
         println("Modelo detectou: $detectedFood")
         println("Bounding Box: $boundingBox")
 
@@ -200,10 +199,6 @@ fun processCapturedImage(
     }
 }
 
-
-
-
-// Classe para representar a bounding box
 data class BoundingBox(val left: Float, val top: Float, val right: Float, val bottom: Float)
 
 @Composable
@@ -216,16 +211,17 @@ fun DrawBoundingBox(boundingBox: BoundingBox) {
                 width = boundingBox.right - boundingBox.left,
                 height = boundingBox.bottom - boundingBox.top
             ),
-            style = Stroke(width = 4f) // Espessura da borda
+            style = Stroke(width = 4f)
         )
     }
 }
 fun saveDetectedFood(food: String?, bitmap: Bitmap?, context: Context) {
     if (food != null && bitmap != null) {
-        // Salve o alimento detectado ou a imagem
-        println("Alimento salvo: $food")
-        // Exemplo: Salvar no armazenamento local ou em uma lista
+        println("Alimento guardado: $food")
     } else {
-        println("Nada para salvar.")
+        println("Nada para guardar.")
     }
 }
+
+
+//Nao foi possivel implementar a detecao de alimentos....

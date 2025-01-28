@@ -21,16 +21,13 @@ fun ScanBarcodePage(onBackClick: () -> Unit) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Texto explicativo
             Text(
-                text = "Aponte a câmara para o código de barras.",
+                text = "Point the camera at the barcode",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Espaço para feed da câmara (Placeholder por enquanto)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -43,13 +40,14 @@ fun ScanBarcodePage(onBackClick: () -> Unit) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botão de voltar
             Button(
                 onClick = onBackClick,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Voltar")
+                Text("Back")
             }
         }
     }
 }
+
+// Ideia para implemnetar codigo de barras

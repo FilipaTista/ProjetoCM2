@@ -40,7 +40,7 @@ class IngredientInformationViewModel @Inject constructor(
                 )
                 _ingredientInformation.value = handleResponse(response)
             } catch (e: Exception) {
-                _ingredientInformation.value = NetworkResult.Error("Erro: ${e.message}")
+                _ingredientInformation.value = NetworkResult.Error("Error: ${e.message}")
             }
         }
     }
@@ -49,24 +49,23 @@ class IngredientInformationViewModel @Inject constructor(
         return if (response.isSuccessful) {
             response.body()?.let {
                 NetworkResult.Success(it)
-            } ?: NetworkResult.Error("Resposta vazia")
+            } ?: NetworkResult.Error("Empty response")
         } else {
-            NetworkResult.Error("Erro: ${response.message()}")
+            NetworkResult.Error("Error: ${response.message()}")
         }
     }
 
     fun fetchRecipesByIngredient(ingredientName: String) {
-        val sanitizedIngredient = ingredientName.trim().lowercase() // Remove espaços e padroniza
+        val sanitizedIngredient = ingredientName.trim().lowercase()
         viewModelScope.launch {
             _recipesByIngredient.value = NetworkResult.Loading()
             try {
                 val response = recipesApi.getRecipesbyIngredients(
-                    ingredients = sanitizedIngredient, // Ingrediente fixo para testes
+                    ingredients = sanitizedIngredient,
                     apiKey = Constants.API_KEY,
-                    number = 3 // Pede 3 receitas
+                    number = 3
                 )
                 _recipesByIngredient.value = handleRecipesResponse(response)
-                // Logs detalhados para depuração
                 Log.d("API_REQUEST", "Ingrediente enviado: $sanitizedIngredient")
                 Log.d("API_RESPONSE", "Resposta da API: ${response.body()}")
             } catch (e: Exception) {
@@ -80,9 +79,9 @@ class IngredientInformationViewModel @Inject constructor(
         return if (response.isSuccessful) {
             response.body()?.let {
                 NetworkResult.Success(it)
-            } ?: NetworkResult.Error("Resposta vazia")
+            } ?: NetworkResult.Error("Empty response")
         } else {
-            NetworkResult.Error("Erro: ${response.message()}")
+            NetworkResult.Error("Error: ${response.message()}")
         }
     }
 }

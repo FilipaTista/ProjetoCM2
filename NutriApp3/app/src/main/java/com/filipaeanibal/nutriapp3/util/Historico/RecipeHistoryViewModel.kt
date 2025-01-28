@@ -54,7 +54,7 @@ class RecipeHistoryViewModel @Inject constructor(
                 _isRecipeSaved.value = !_isRecipeSaved.value
                 loadSavedRecipes()
             } catch (e: Exception) {
-                _savedRecipes.value = NetworkResult.Error("Erro ao salvar receita: ${e.message}")
+                _savedRecipes.value = NetworkResult.Error("Error saving recipe: ${e.message}")
             }
         }
     }
@@ -93,7 +93,7 @@ class RecipeHistoryViewModel @Inject constructor(
 
                 _savedRecipes.value = NetworkResult.Success(recipes)
             } catch (e: Exception) {
-                _savedRecipes.value = NetworkResult.Error("Erro ao carregar receitas: ${e.message}")
+                _savedRecipes.value = NetworkResult.Error("Error loading recipes: ${e.message}")
             }
         }
     }
@@ -101,7 +101,7 @@ class RecipeHistoryViewModel @Inject constructor(
     fun deleteRecipe(recipeId: Int) {
         viewModelScope.launch {
             try {
-                val userId = auth.currentUser?.uid ?: return@launch  // Usando Firebase Auth diretamente
+                val userId = auth.currentUser?.uid ?: return@launch
 
                 val query = firestore.collection("recipeHistory")
                     .whereEqualTo("userId", userId)
@@ -115,7 +115,7 @@ class RecipeHistoryViewModel @Inject constructor(
 
                 loadSavedRecipes()
             } catch (e: Exception) {
-                _savedRecipes.value = NetworkResult.Error("Erro ao deletar receita: ${e.message}")
+                _savedRecipes.value = NetworkResult.Error("Error deleting recipe: ${e.message}")
             }
         }
     }

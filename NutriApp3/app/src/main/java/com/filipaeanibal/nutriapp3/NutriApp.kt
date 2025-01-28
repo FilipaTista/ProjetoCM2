@@ -45,15 +45,6 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
-        // DetectObjectsPage
-        composable("detectarObjetos") {
-            DetectObjectsPage(
-                onCameraClick = { navController.navigate("camera") },
-                onBarcodeClick = { navController.navigate("lerCodigoBarras") },
-                onSearchClick = { navController.navigate("pesquisarAlimentos") }
-            )
-        }
-
         // CameraPage
         composable("camera") { CameraPage(
             onNavigate = { page -> navController.navigate(page) },
