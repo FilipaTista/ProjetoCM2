@@ -68,7 +68,7 @@ fun RecipeGenPage(
     )
 
     LaunchedEffect(Unit) {
-        viewModel.fetchRandomRecipes(number = 2)
+        viewModel.fetchRandomRecipes(number = 3)
     }
 
     Scaffold(
@@ -125,7 +125,7 @@ fun RecipeGenPage(
                             val tagsString = searchTags.joinToString(",")
                             viewModel.fetchRandomRecipesByType(
                                 type = tagsString,
-                                number = 2
+                                number = 3
                             )
                         }
                     },
@@ -145,12 +145,12 @@ fun RecipeGenPage(
                                 onClick = {
                                     searchTags = searchTags - tag
                                     if (searchTags.isEmpty()) {
-                                        viewModel.fetchRandomRecipes(number = 2)
+                                        viewModel.fetchRandomRecipes(number = 3)
                                     } else {
                                         val tagsString = searchTags.joinToString(",").lowercase()
                                         viewModel.fetchRandomRecipesByType(
                                             type = tagsString,
-                                            number = 2
+                                            number = 3
                                         )
                                     }
                                 },
@@ -185,11 +185,11 @@ fun RecipeGenPage(
                                 searchTags = emptyList()
 
                                 if (newType.isEmpty()) {
-                                    viewModel.fetchRandomRecipes(number = 2)
+                                    viewModel.fetchRandomRecipes(number = 3)
                                 } else {
                                     viewModel.fetchRandomRecipesByType(
                                         type = newType,
-                                        number = 2
+                                        number = 3
                                     )
                                 }
                             },
@@ -259,7 +259,7 @@ fun RecipeGenPage(
                     selectedType = ""
                     viewModel.fetchRandomRecipesByType(
                         type = filters,
-                        number = 2
+                        number = 3
                     )
                     searchTags = filters.split(",")
                     showFilterDrawer = false
