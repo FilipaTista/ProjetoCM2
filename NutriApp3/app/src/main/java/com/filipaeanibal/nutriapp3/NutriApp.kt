@@ -55,7 +55,9 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
         // CameraPage
-        composable("camera") { CameraPage() }
+        composable("camera") { CameraPage(
+            onNavigate = { page -> navController.navigate(page) },
+        ) }
 
         // SearchFoodPage
         composable("pesquisarAlimentos") {
