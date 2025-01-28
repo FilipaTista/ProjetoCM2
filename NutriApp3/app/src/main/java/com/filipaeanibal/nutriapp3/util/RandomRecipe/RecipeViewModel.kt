@@ -29,7 +29,7 @@ class RecipeViewModel @Inject constructor(
                 )
                 _recipes.value = handleResponse(response)
             } catch (e: Exception) {
-                _recipes.value = NetworkResult.Error("Erro: ${e.message}")
+                _recipes.value = NetworkResult.Error("Error: ${e.message}")
             }
         }
     }
@@ -46,12 +46,12 @@ class RecipeViewModel @Inject constructor(
                 _recipes.value = if (response.isSuccessful) {
                     response.body()?.let {
                         NetworkResult.Success(it)
-                    } ?: NetworkResult.Error("Resposta vazia")
+                    } ?: NetworkResult.Error("Empty response")
                 } else {
-                    NetworkResult.Error("Erro: ${response.message()}")
+                    NetworkResult.Error("Error: ${response.message()}")
                 }
             } catch (e: Exception) {
-                _recipes.value = NetworkResult.Error("Erro: ${e.message}")
+                _recipes.value = NetworkResult.Error("Error: ${e.message}")
             }
         }
     }
@@ -61,9 +61,9 @@ class RecipeViewModel @Inject constructor(
         return if (response.isSuccessful) {
             response.body()?.let {
                 NetworkResult.Success(it)
-            } ?: NetworkResult.Error("Resposta vazia")
+            } ?: NetworkResult.Error("Empty response")
         } else {
-            NetworkResult.Error("Erro: ${response.message()}")
+            NetworkResult.Error("Error: ${response.message()}")
         }
     }
 }

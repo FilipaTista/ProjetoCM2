@@ -43,7 +43,7 @@ fun NutrientPieChart(
     calories: Int,
     defaultAmount: Double = 100.0,
     onAmountChanged: (Double) -> Unit,
-    isServings: Boolean = false, // Para diferenciar entre g e servings
+    isServings: Boolean = false, // Para podermos mudar entre g e servings (os 2 tipos que temos como rersposta)
     modifier: Modifier = Modifier
 ) {
     var selectedAmount by remember { mutableStateOf(defaultAmount.toString()) }
@@ -57,7 +57,6 @@ fun NutrientPieChart(
     }
 
     Column(modifier = modifier) {
-        // Gráfico e calorias
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -92,8 +91,6 @@ fun NutrientPieChart(
                     startAngle += sweepAngle
                 }
             }
-
-            // Calorias no centro
             Surface(
                 modifier = Modifier.size(100.dp),
                 shape = RoundedCornerShape(50),
@@ -113,14 +110,12 @@ fun NutrientPieChart(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "calories",
+                        text = "kcal",
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
             }
         }
-
-        // Controle de quantidade
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -129,13 +124,12 @@ fun NutrientPieChart(
                 .padding(horizontal = 16.dp)
         ) {
             Text(
-                text = "Quantidade:",
+                text = "Amount:",
                 style = MaterialTheme.typography.bodyMedium
             )
             OutlinedTextField(
                 value = selectedAmount,
                 onValueChange = { newValue ->
-                    // Aceita apenas números e ponto
                     if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
                         selectedAmount = newValue
                         newValue.toDoubleOrNull()?.let { onAmountChanged(it) }
@@ -153,8 +147,6 @@ fun NutrientPieChart(
                 }
             )
         }
-
-        // Card nutricional
         Card(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -165,7 +157,7 @@ fun NutrientPieChart(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Informação Nutricional por ${selectedAmount} ${if (isServings) "servings" else "g"}",
+                    text = "Nutritional Information for ${selectedAmount} ${if (isServings) "servings" else "g"}",
                     style = MaterialTheme.typography.titleMedium
                 )
 
@@ -195,9 +187,8 @@ fun NutrientPieChart(
     }
 }
 
-// Cores para os nutrientes com ajuste de opacidade para melhor visual
 object NutrientColors {
-    val Protein = Color(0xFF2196F3).copy(alpha = 0.8f)    // Azul
-    val Carbs = Color(0xFF4CAF50).copy(alpha = 0.8f)      // Verde
-    val Fat = Color(0xFFFF9800).copy(alpha = 0.8f)        // Laranja
+    val Protein = Color(0xFF2196F3).copy(alpha = 0.8f)
+    val Carbs = Color(0xFF4CAF50).copy(alpha = 0.8f)
+    val Fat = Color(0xFFFF9800).copy(alpha = 0.8f)
 }

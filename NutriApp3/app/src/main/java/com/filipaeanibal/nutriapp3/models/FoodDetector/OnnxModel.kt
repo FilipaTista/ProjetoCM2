@@ -27,7 +27,6 @@ class OnnxModel(context: Context) {
         val results: OrtSession.Result = ortSession.run(inputs)
         val outputTensor = results.get("output") as OnnxTensor
 
-        // Converter o tensor de saída para um array de float
         return outputTensor.floatBuffer.array()
     }
 

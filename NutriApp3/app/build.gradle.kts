@@ -104,7 +104,7 @@ dependencies {
     implementation (libs.androidx.material.icons.extended)
     implementation(libs.guava)
     implementation(libs.listenablefuture)
-    implementation(libs.onnxruntime.android)
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:latest.release")
 
 
 }
