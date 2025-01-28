@@ -29,12 +29,12 @@ class IngredientSearchViewModel @Inject constructor(
                 _ingredients.value = if (response.isSuccessful) {
                     response.body()?.let {
                         NetworkResult.Success(it)
-                    } ?: NetworkResult.Error("Resposta vazia")
+                    } ?: NetworkResult.Error("Empty response")
                 } else {
-                    NetworkResult.Error("Erro: ${response.message()}")
+                    NetworkResult.Error("Error: ${response.message()}")
                 }
             } catch (e: Exception) {
-                _ingredients.value = NetworkResult.Error("Erro: ${e.message}")
+                _ingredients.value = NetworkResult.Error("Error: ${e.message}")
             }
         }
     }

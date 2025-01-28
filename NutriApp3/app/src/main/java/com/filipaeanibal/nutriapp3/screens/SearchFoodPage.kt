@@ -46,6 +46,7 @@ fun SearchFoodPage(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     IconButton(
@@ -54,12 +55,12 @@ fun SearchFoodPage(
                     ) {
                         Icon(
                             Icons.Default.ArrowBack,
-                            contentDescription = "Voltar",
+                            contentDescription = "Back",
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                     Text(
-                        text = "Pesquisar Alimentos",
+                        text = "Search Foods",
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
@@ -74,8 +75,6 @@ fun SearchFoodPage(
                         )
                     }
                 }
-
-                // Search Bar
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -110,7 +109,7 @@ fun SearchFoodPage(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Por favor, insira um ingrediente para pesquisar",
+                            text = "Please enter an ingredient to search",
                             fontSize = 16.sp
                         )
                     }
@@ -139,7 +138,7 @@ fun SearchFoodPage(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = state.message ?: "Erro desconhecido",
+                            text = state.message ?: "Unknown error",
                             color = MaterialTheme.colorScheme.error
                         )
                     }
@@ -166,7 +165,6 @@ fun IngredientCard(
             modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Ingredient Image
             AsyncImage(
                 model = "https://spoonacular.com/cdn/ingredients_100x100/${ingredient.image}",
                 contentDescription = ingredient.name,
@@ -175,8 +173,6 @@ fun IngredientCard(
                     .size(100.dp)
                     .padding(8.dp)
             )
-
-            // Ingredient Name
             Text(
                 text = ingredient.name,
                 style = MaterialTheme.typography.titleMedium,

@@ -1,6 +1,7 @@
 package com.filipaeanibal.nutriapp3.screens
 
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -42,7 +43,6 @@ fun HistoryPage(
         topBar = {
             TopAppBar(
                 title = {
-                    //setas para voltar para tras
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -52,13 +52,13 @@ fun HistoryPage(
                         ) {
                             Icon(
                                 Icons.Default.ArrowBack,
-                                contentDescription = "Voltar",
+                                contentDescription = "Back",
                                 tint = MaterialTheme.colorScheme.onPrimary
                             )
                         }
 
                         Text(
-                            text = "Histórico de Receitas",
+                            text = "Recipe History",
                             style = MaterialTheme.typography.headlineMedium
                         )
                     }
@@ -86,7 +86,7 @@ fun HistoryPage(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("Nenhuma receita salva ainda")
+                        Text("No recipes saved")
                     }
                 } else {
                     LazyVerticalGrid(
@@ -118,7 +118,7 @@ fun HistoryPage(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = state.message ?: "Erro desconhecido",
+                        text = state.message ?: "An error occurred",
                         color = MaterialTheme.colorScheme.error
                     )
                 }
@@ -147,8 +147,6 @@ fun SavedRecipeCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
-
-            // Gradient overlay
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -161,8 +159,6 @@ fun SavedRecipeCard(
                         )
                     )
             )
-
-            // Title and Delete button
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -172,14 +168,14 @@ fun SavedRecipeCard(
                 IconButton(
                     onClick = onDeleteClick,
                     modifier = Modifier.align(Alignment.End)
-                ) {
+                )
+                {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = "Deletar",
+                        contentDescription = "Delete",
                         tint = Color.White
                     )
                 }
-
                 Text(
                     text = recipe.title,
                     style = MaterialTheme.typography.bodyLarge,

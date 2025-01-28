@@ -41,7 +41,7 @@ class AuthViewModel @Inject constructor(
             _currentUser.value = result.user
             _authError.value = null
         } catch (e: Exception) {
-            _authError.value = e.message ?: "Erro de autenticação"
+            _authError.value = e.message ?: "Authentication error"
         }
     }
 
@@ -51,7 +51,7 @@ class AuthViewModel @Inject constructor(
             _currentUser.value = result.user
             _authError.value = null
         } catch (e: Exception) {
-            _authError.value = e.message ?: "Erro de registo"
+            _authError.value = e.message ?: "Error creating account"
         }
     }
 

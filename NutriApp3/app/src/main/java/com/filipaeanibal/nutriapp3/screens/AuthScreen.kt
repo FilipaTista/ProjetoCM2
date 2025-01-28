@@ -53,7 +53,7 @@ fun AuthScreen(navController: NavHostController, authViewModel: AuthViewModel = 
     var showPassword by remember { mutableStateOf(false) }
     var showEmptyFieldsError by remember { mutableStateOf(false) }
 
-    // Navegar para o menu se o login for bem-sucedido
+    // Login bem-sucedido
     LaunchedEffect(currentUser) {
         if (currentUser != null) {
             navController.navigate("menu") {
@@ -62,17 +62,17 @@ fun AuthScreen(navController: NavHostController, authViewModel: AuthViewModel = 
         }
     }
 
-    // Exibir mensagens de erro de autenticação
+    // Mostrar erro de autenticação
     LaunchedEffect(authError) {
         if (authError != null) {
             Toast.makeText(context, authError, Toast.LENGTH_SHORT).show()
         }
     }
 
-    // Exibir erro caso campos estejam vazios
+    // Mostar erro de campos vazios
     LaunchedEffect(showEmptyFieldsError) {
         if (showEmptyFieldsError) {
-            Toast.makeText(context, "Por favor, preencha todos os campos.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -83,15 +83,14 @@ fun AuthScreen(navController: NavHostController, authViewModel: AuthViewModel = 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .imePadding() // Adapta ao teclado automaticamente
-                .verticalScroll(rememberScrollState()), // Adiciona scroll
+                .imePadding()
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Cabeçalho com imagem
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp) // Altura do cabeçalho
+                    .height(300.dp)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.nutriapp_logo),
@@ -100,16 +99,12 @@ fun AuthScreen(navController: NavHostController, authViewModel: AuthViewModel = 
                     alignment = Alignment.TopCenter
                 )
             }
-
-            // Seção de título
             Text(
                 text = "Welcome to NutriApp!",
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
-
-            // Campos de email e senha
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
@@ -123,7 +118,6 @@ fun AuthScreen(navController: NavHostController, authViewModel: AuthViewModel = 
                     unfocusedBorderColor = Color.Gray
                 )
             )
-
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -146,8 +140,6 @@ fun AuthScreen(navController: NavHostController, authViewModel: AuthViewModel = 
                     unfocusedBorderColor = Color.Gray
                 )
             )
-
-            // Botão de login
             Button(
                 onClick = {
                     if (email.isBlank() || password.isBlank()) {
@@ -163,8 +155,6 @@ fun AuthScreen(navController: NavHostController, authViewModel: AuthViewModel = 
             ) {
                 Text("Login", fontSize = 18.sp)
             }
-
-            // Botão de registro
             Button(
                 onClick = {
                     if (email.isBlank() || password.isBlank()) {

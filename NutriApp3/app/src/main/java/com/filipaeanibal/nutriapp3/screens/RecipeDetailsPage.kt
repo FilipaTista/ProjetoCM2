@@ -60,7 +60,6 @@ fun RecipeDetailsPage(
     navController: NavHostController,
     historyViewModel: RecipeHistoryViewModel = hiltViewModel()
 ) {
-    // Trigger fetch when the page loads
     LaunchedEffect(recipeId) {
         viewModel.fetchRecipeDetails(recipeId)
         viewModel.fetchRecipeInstructions(recipeId)
@@ -80,6 +79,7 @@ fun RecipeDetailsPage(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     IconButton(
@@ -88,12 +88,12 @@ fun RecipeDetailsPage(
                     ) {
                         Icon(
                             Icons.Default.ArrowBack,
-                            contentDescription = "Voltar",
+                            contentDescription = "Back",
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                     Text(
-                        text = "Detalhes da Receita",
+                        text = "Recipe Details",
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
@@ -109,7 +109,7 @@ fun RecipeDetailsPage(
                                         )
                                         Toast.makeText(
                                             navController.context,
-                                            if (isRecipeSaved) "Receita removida dos salvos" else "Receita salva",
+                                            if (isRecipeSaved) "Recipe removed from saved" else "Recipe saved",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
@@ -121,13 +121,13 @@ fun RecipeDetailsPage(
                                     }
                                     Icon(
                                         imageVector = Icons.Default.Bookmark,
-                                        contentDescription = if (isRecipeSaved) "Remover dos Salvos" else "Salvar Receita",
+                                        contentDescription = if (isRecipeSaved) "Remove from Saved" else "Save Recipe",
                                         tint = tint
                                     )
                                 }
                             }
                         }
-                        else -> {} // Não mostrar o botão em estados de loading ou erro
+                        else -> {}
                     }
                 }
             }
@@ -179,8 +179,6 @@ fun RecipeDetailsPage(
                                             modifier = Modifier.fillMaxSize()
                                         )
                                     }
-
-                                    // Gradient Overlay
                                     Box(
                                         modifier = Modifier
                                             .fillMaxSize()
@@ -193,8 +191,6 @@ fun RecipeDetailsPage(
                                                 )
                                             )
                                     )
-
-                                    // Recipe Details
                                     Column(
                                         modifier = Modifier
                                             .fillMaxSize()
@@ -212,12 +208,11 @@ fun RecipeDetailsPage(
                                             modifier = Modifier.padding(top = 8.dp),
                                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                                         ) {
-                                            // Time Chip
                                             RecipeChip(
                                                 icon = {
                                                     Icon(
                                                         Icons.Outlined.Timer,
-                                                        contentDescription = "Tempo de preparo",
+                                                        contentDescription = "Preparation Time",
                                                         tint = Color.White
                                                     )
                                                 },
@@ -228,18 +223,17 @@ fun RecipeDetailsPage(
                                                     )
                                                 },
                                             )
-                                            // Servings Chip
                                             RecipeChip(
                                                 icon = {
                                                     Icon(
                                                         Icons.Outlined.People,
-                                                        contentDescription = "Porções",
+                                                        contentDescription = "Servings",
                                                         tint = Color.White
                                                     )
                                                 },
                                                 label = {
                                                     Text(
-                                                        "${recipeDetails.servings} porções",
+                                                        "${recipeDetails.servings} servings",
                                                         color = Color.White
                                                     )
                                                 },
@@ -264,8 +258,6 @@ fun RecipeDetailsPage(
                                 }
                             }
                         }
-
-                        // Nutrition Information Section
                         item {
                             Text(
                                 text = "Nutritional value per serving",
@@ -273,7 +265,6 @@ fun RecipeDetailsPage(
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
                         }
-                        // Key Nutrients
                         item {
                             recipeDetails.nutrition?.nutrients?.let { nutrients ->
                                 val mainNutrients = listOf(
@@ -298,13 +289,13 @@ fun RecipeDetailsPage(
                                 )
 
                                 val calories = nutrients.find { it.name == "Calories" }?.amount?.toInt() ?: 0
-
+                                // defaultAmount = 1.0 pois é 1 serving
                                 NutrientPieChart(
                                     nutrients = mainNutrients,
                                     calories = calories,
-                                    defaultAmount = 1.0,  // Começa com 1 serving
+                                    defaultAmount = 1.0,
                                     onAmountChanged = { selectedServings = it },
-                                    isServings = true,  // É em servings
+                                    isServings = true,
                                     modifier = Modifier.fillMaxWidth()
                                 )
                             }
@@ -313,7 +304,6 @@ fun RecipeDetailsPage(
                             when (val instructionsState = viewModel.recipeInstructions.collectAsState().value) {
                                 is NetworkResult.Success -> {
                                     instructionsState.data?.let { instructions ->
-                                        // Renderiza ingredientes diretamente no escopo do LazyColumn
                                         IngredientsSection(
                                             instructions = instructions,
                                             onIngredientClick = { ingredientId, ingredientName ->
@@ -327,7 +317,7 @@ fun RecipeDetailsPage(
                                 }
                                 is NetworkResult.Error -> {
                                     Text(
-                                        text = instructionsState.message ?: "Erro ao carregar instruções",
+                                        text = instructionsState.message ?: "Error loading instructions",
                                         color = MaterialTheme.colorScheme.error
                                     )
                                 }
@@ -345,7 +335,7 @@ fun RecipeDetailsPage(
                                 }
                                 is NetworkResult.Error -> {
                                     Text(
-                                        text = instructionsState.message ?: "Erro ao carregar instruções",
+                                        text = instructionsState.message ?: "Error loading instructions",
                                         color = MaterialTheme.colorScheme.error
                                     )
                                 }
@@ -355,7 +345,7 @@ fun RecipeDetailsPage(
                 }
                 is NetworkResult.Error -> {
                     Text(
-                        text = state.message ?: "Erro desconhecido",
+                        text = state.message ?: "Unknown error",
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.align(Alignment.Center)
                     )
@@ -376,7 +366,7 @@ fun InstructionsSection(instructions: RecipeInstructions) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "Instruções",
+                text = "Instructions",
                 style = MaterialTheme.typography.titleLarge
             )
 
@@ -414,7 +404,7 @@ fun IngredientsSection(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "Ingredientes",
+                text = "Ingredients",
                 style = MaterialTheme.typography.titleLarge
             )
 
@@ -425,7 +415,7 @@ fun IngredientsSection(
 
             if (uniqueIngredients.isEmpty()) {
                 Text(
-                    text = "Nenhum ingrediente encontrado.",
+                    text = "No ingredients found",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.error
                 )

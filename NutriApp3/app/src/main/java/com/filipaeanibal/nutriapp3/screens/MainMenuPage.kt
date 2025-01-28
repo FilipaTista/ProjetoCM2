@@ -35,7 +35,6 @@ fun MainMenuPage(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Imagem de fundo
             Image(
                 painter = painterResource(id = R.drawable.nutriapp_background),
                 contentDescription = "Background",
@@ -50,7 +49,6 @@ fun MainMenuPage(
                 verticalArrangement = Arrangement.SpaceBetween,
 
                 ) {
-                // Header Section
                 Column(
                     modifier = Modifier.padding(top = 150.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -63,14 +61,11 @@ fun MainMenuPage(
                         modifier = Modifier.padding(vertical = 10.dp)
                     )
                 }
-
-                // Main Buttons Section
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(30.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Detect Objects Button
                     Button(
                         onClick = { onNavigate("pesquisarAlimentos") },
                         modifier = Modifier
@@ -87,7 +82,6 @@ fun MainMenuPage(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Detect Objects", fontSize = 18.sp)
                     }
-                    // Generate Recipes Button
                     Button(
                         onClick = { onNavigate("gerarReceitas") },
                         modifier = Modifier
@@ -104,7 +98,6 @@ fun MainMenuPage(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Generate Recipes", fontSize = 18.sp)
                     }
-                    // Recipe History Button (less prominent)
                     OutlinedButton(
                         onClick = { onNavigate("historicoReceitas") },
                         modifier = Modifier
@@ -125,8 +118,6 @@ fun MainMenuPage(
                         Text("Recipe History", fontSize = 16.sp)
                     }
                 }
-
-                // Logout Button Section
                 Button(
                     onClick = {
                         authViewModel.logout()
@@ -136,7 +127,7 @@ fun MainMenuPage(
                     },
                     modifier = Modifier
                         .align(Alignment.End)
-                        .padding(end = 16.dp, bottom = 16.dp),
+                        .padding(end = 16.dp, bottom = 35.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.White,
                         contentColor = MaterialTheme.colorScheme.onTertiaryContainer
