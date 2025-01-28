@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
-import com.filipaeanibal.nutriapp3.ui.theme.NutriApp3Theme
+import com.filipaeanibal.nutriapp3.ui.theme.NutriAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            NutriApp3Theme {
+            NutriAppTheme {
                 NutriApp()
             }
         }
