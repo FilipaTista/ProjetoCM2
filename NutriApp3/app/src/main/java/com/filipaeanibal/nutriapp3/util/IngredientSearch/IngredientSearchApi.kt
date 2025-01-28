@@ -10,6 +10,6 @@ interface IngredientSearchApi {
     suspend fun getSearchIngredients(
         @Query("query") query: String,
         @Query("apiKey") apiKey: String,
-        @Query("number") number: Int = 2,
+        @Query("number") number: Int = 3,
     ): Response<IngredientSearch>
 }
