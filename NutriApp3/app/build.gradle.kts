@@ -101,9 +101,10 @@ dependencies {
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.google.firebase.auth.ktx)
-    implementation ("androidx.compose.material:material-icons-extended:1.5.1")
-    implementation("com.google.guava:guava:32.1.3-android")
-    implementation("com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava")
+    implementation (libs.androidx.material.icons.extended)
+    implementation(libs.guava)
+    implementation(libs.listenablefuture)
+    implementation(libs.onnxruntime.android)
 
 
 }
