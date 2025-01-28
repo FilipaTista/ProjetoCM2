@@ -1,4 +1,4 @@
-package com.filipaeanibal.nutriapp3.util
+package com.filipaeanibal.nutriapp3.util.RecipeDetails
 
 import com.filipaeanibal.nutriapp3.models.RecipeDetails.RecipeDetails
 import retrofit2.Response

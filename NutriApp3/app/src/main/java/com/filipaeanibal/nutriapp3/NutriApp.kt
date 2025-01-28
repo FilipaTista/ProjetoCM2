@@ -61,7 +61,9 @@ fun AppNavGraph(navController: NavHostController) {
         composable("pesquisarAlimentos") {
             SearchFoodPage(
                 onBackClick = { navController.popBackStack() },
-                navController = navController
+                navController = navController,
+                onCameraClick = { navController.navigate("camera")}
+
             )
         }
 
@@ -71,7 +73,9 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
         // RecipeGenPage
-        composable("gerarReceitas") { RecipeGenPage(navController) }
+        composable("gerarReceitas") { RecipeGenPage(
+            onBackClick = { navController.popBackStack() },
+            navController= navController) }
 
         // RecipeDetailsPage
         composable(
@@ -108,7 +112,9 @@ fun AppNavGraph(navController: NavHostController) {
         }
         // HistoryPage
         composable("historicoReceitas") {
-            HistoryPage(navController = navController)
+            HistoryPage(
+                onBackClick = { navController.popBackStack() },
+                navController = navController)
         }
     }
 }

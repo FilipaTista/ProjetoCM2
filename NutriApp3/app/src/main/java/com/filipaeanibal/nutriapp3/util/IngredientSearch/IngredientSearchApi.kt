@@ -1,4 +1,4 @@
-package com.filipaeanibal.nutriapp3.util
+package com.filipaeanibal.nutriapp3.util.IngredientSearch
 
 import retrofit2.Response
 import retrofit2.http.GET

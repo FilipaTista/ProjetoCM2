@@ -1,4 +1,4 @@
-package com.filipaeanibal.nutriapp3.util
+package com.filipaeanibal.nutriapp3.util.IngredientSearch
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.filipaeanibal.nutriapp3.models.IngredientSearch.IngredientSearch
+import com.filipaeanibal.nutriapp3.util.Constants
+import com.filipaeanibal.nutriapp3.util.NetworkResult
 
 @HiltViewModel
 class IngredientSearchViewModel @Inject constructor(

@@ -9,24 +9,27 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.filipaeanibal.nutriapp3.components.AnimatedSearchBar
 import com.filipaeanibal.nutriapp3.models.IngredientSearch.Result
-import com.filipaeanibal.nutriapp3.util.IngredientSearchViewModel
+import com.filipaeanibal.nutriapp3.util.IngredientSearch.IngredientSearchViewModel
 import com.filipaeanibal.nutriapp3.util.NetworkResult
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchFoodPage(
     onBackClick: () -> Unit,
+    onCameraClick: () -> Unit,
     viewModel: IngredientSearchViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
@@ -60,6 +63,16 @@ fun SearchFoodPage(
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
+                    IconButton(
+                        onClick = onCameraClick,
+                        modifier = Modifier.padding(start = 16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CameraAlt,
+                            contentDescription = "Camera",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                 }
 
                 // Search Bar
@@ -70,36 +83,17 @@ fun SearchFoodPage(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TextField(
-                        value = searchQuery,
-                        onValueChange = { searchQuery = it },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(56.dp),
-                        placeholder = { Text("Pesquisar ingredientes") },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Search,
-                                contentDescription = "Search"
-                            )
-                        },
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        ),
-                        shape = RoundedCornerShape(12.dp),
-                        singleLine = true
-                    )
-
-                    Button(
-                        onClick = {
+                    AnimatedSearchBar(
+                        query = searchQuery,
+                        onQueryChange = { searchQuery = it },
+                        onSearch = {
                             if (searchQuery.isNotBlank()) {
                                 viewModel.searchIngredients(searchQuery)
                             }
                         },
-                        modifier = Modifier.height(56.dp)
-                    ) {
-                        Text("Buscar")
-                    }
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = "Search ingredients..."
+                    )
                 }
             }
         }
@@ -112,10 +106,13 @@ fun SearchFoodPage(
             when (val state = ingredientState) {
                 is NetworkResult.Loading -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.align(Alignment.Center),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        Text(
+                            text = "Por favor, insira um ingrediente para pesquisar",
+                            fontSize = 16.sp
+                        )
                     }
                 }
                 is NetworkResult.Success -> {

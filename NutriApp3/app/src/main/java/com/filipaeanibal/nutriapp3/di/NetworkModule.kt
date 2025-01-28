@@ -2,12 +2,12 @@ package com.filipaeanibal.nutriapp3.di
 
 
 import com.filipaeanibal.nutriapp3.util.Constants
-import com.filipaeanibal.nutriapp3.util.IngredientInformationApi
-import com.filipaeanibal.nutriapp3.util.IngredientSearchApi
-import com.filipaeanibal.nutriapp3.util.RandomRecipeApi
-import com.filipaeanibal.nutriapp3.util.RecipeDetailsApi
-import com.filipaeanibal.nutriapp3.util.RecipeInstructionsApi
-import com.filipaeanibal.nutriapp3.util.SearchRecipesbyIngredientsApi
+import com.filipaeanibal.nutriapp3.util.IngredientInformation.IngredientInformationApi
+import com.filipaeanibal.nutriapp3.util.IngredientSearch.IngredientSearchApi
+import com.filipaeanibal.nutriapp3.util.RandomRecipe.RandomRecipeApi
+import com.filipaeanibal.nutriapp3.util.RecipeDetails.RecipeDetailsApi
+import com.filipaeanibal.nutriapp3.util.RecipeDetails.RecipeInstructionsApi
+import com.filipaeanibal.nutriapp3.util.IngredientInformation.SearchRecipesbyIngredientsApi
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module

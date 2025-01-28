@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,25 +22,46 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.filipaeanibal.nutriapp3.models.SavedRecipe
 import com.filipaeanibal.nutriapp3.util.NetworkResult
-import com.filipaeanibal.nutriapp3.util.RecipeHistoryViewModel
+import com.filipaeanibal.nutriapp3.util.Historico.RecipeHistoryViewModel
 import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryPage(
+    onBackClick: () -> Unit,
     viewModel: RecipeHistoryViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.loadSavedRecipes()
+    }
+
     val savedRecipesState by viewModel.savedRecipes.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = "Histórico de Receitas",
-                        style = MaterialTheme.typography.headlineMedium
-                    )
+                    //setas para voltar para tras
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(
+                            onClick = onBackClick,
+                            modifier = Modifier.padding(end = 16.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.ArrowBack,
+                                contentDescription = "Voltar",
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+
+                        Text(
+                            text = "Histórico de Receitas",
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
